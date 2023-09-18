@@ -125,65 +125,82 @@ int main() {
         
         int choice;
         cin >> choice;
-
-        if (choice == 1) {
-            Pipe pipe;
-            pipe.read();
-            pipes.push_back(pipe);
-        } else if (choice == 2){
-            Compressor_Station station;
-            station.read();
-            stations.push_back(station);
-        } else if (choice == 3){
-            cout << "Pipes:\n";
-            for (const Pipe& pipe : pipes) {
-                pipe.display();
-                cout << endl;
+        
+        switch (choice) {
+            case 0:
+                break;
+            case 1:{
+                Pipe pipe;
+                pipe.read();
+                pipes.push_back(pipe);
+                break;
             }
-            cout << "Compressor station:\n";
-            for (const Compressor_Station& station : stations) {
-                station.display();
-                cout << endl;
+            case 2:{
+                Compressor_Station station;
+                station.read();
+                stations.push_back(station);
+                break;
             }
-        } else if (choice == 4) {
-            // Редактирование трубы
-            string pipeName;
-            cout << "Enter the name of the pipe to edit: ";
-            cin >> pipeName;
-            for (Pipe& pipe : pipes) {
-                if (pipe.name == pipeName) {
-                    pipe.toggle_repair();
-                    cout << "Pipe condition '" << pipe.name << "' Changed to 'Under repair: " << (pipe.under_repair ? "Yes" : "No") << "'\n";
-                    break;
+            case 3:{
+                cout << "Pipes:\n";
+                for (const Pipe& pipe : pipes) {
+                    pipe.display();
+                    cout << endl;
                 }
-            }
-        } else if (choice == 5) {
-            // Редактирование КС
-            string stationName;
-            cout << "Enter the name of the compressor station to edit: ";
-            cin >> stationName;
-            for (Compressor_Station& station : stations) {
-                if (station.name == stationName) {
-                    // Добавьте здесь логику для редактирования КС
-                    break;
+                cout << "Compressor station:\n";
+                for (const Compressor_Station& station : stations) {
+                    station.display();
+                    cout << endl;
                 }
+                break;
             }
-        } else if (choice == 6) {
-            string filename;
-            cout << "Enter the file name to save: ";
-            cin >> filename;
-            saveData(pipes, stations, filename);
-        } else if (choice == 7) {
-            string filename;
-            cout << "Enter the file name to upload: ";
-            cin >> filename;
-            loadData(pipes, stations, filename);
-        } else if (choice == 0) {
-            break;
-        } else {
-            cout << "A non-correct choice. Try again.\n";
+            case 4:{
+                // Редактирование трубы
+                string pipeName;
+                cout << "Enter the name of the pipe to edit: ";
+                cin >> pipeName;
+                for (Pipe& pipe : pipes) {
+                    if (pipe.name == pipeName) {
+                        pipe.toggle_repair();
+                        cout << "Pipe condition '" << pipe.name << "' Changed to 'Under repair: " << (pipe.under_repair ? "Yes" : "No") << "'\n";
+                        break;
+                    }
+                }
+                break;
+            }
+            case 5:{
+                // Редактирование КС
+                string stationName;
+                cout << "Enter the name of the compressor station to edit: ";
+                cin >> stationName;
+                for (Compressor_Station& station : stations) {
+                    if (station.name == stationName) {
+                        // Добавьте здесь логику для редактирования КС
+                        break;
+                    }
+                }
+                break;
+            }
+            case 6:{
+                string filename;
+                cout << "Enter the file name to save: ";
+                cin >> filename;
+                saveData(pipes, stations, filename);
+                break;
+            }
+            case 7:{
+                string filename;
+                cout << "Enter the file name to upload: ";
+                cin >> filename;
+                loadData(pipes, stations, filename);
+                break;
+            }
+                
+            default:{
+                cout << "A non-correct choice. Try again.\n";
+                break;
+            }
         }
     }
-
     return 0;
 }
