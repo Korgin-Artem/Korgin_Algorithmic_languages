@@ -1,6 +1,7 @@
 #include <iostream>
-#include <fstream>
+#include <cstdlib>
 #include <string>
+#include <limits>
 
 using namespace std;
 
@@ -14,20 +15,31 @@ struct Pipe {
     bool under_repair;
 
     void read() {
-        cout << "Enter the name of the pipe: ";
+        cout << "Введите название трубы: ";
         cin >> name;
-        cout << "Enter the length of the pipe (in km): ";
-        cin >> length;
-        cout << "Enter the pipe diameter: ";
-        cin >> diameter;
+
+        cout << "Введите длину трубы (в км): ";
+        while (!(cin >> length) || length <= 0 ) {
+            cerr << "Ошибка: Введите корректное значение для длины трубы (в км): ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+
+        cout << "Введите диаметр трубы: ";
+        while (!(cin >> diameter) || diameter <= 0) {
+            cerr << "Ошибка: Введите корректное значение для диаметра трубы: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+
         under_repair = false;
     }
 
     void display() const {
-        cout << "Name: " << name << endl;
-        cout << "Length (km): " << length << endl;
-        cout << "Diameter: " << diameter << endl;
-        cout << "Under repair: " << (under_repair ? "Yes" : "No") << endl;
+        cout << "Название: " << name << endl;
+        cout << "Длина (км): " << length << endl;
+        cout << "Диаметр: " << diameter << endl;
+        cout << "На ремонте: " << (under_repair ? "Да" : "Нет") << endl;
     }
 
     void toggle_repair() {
@@ -39,175 +51,153 @@ struct Compressor_Station {
     string name;
     int num_workshops;
     int num_workshops_in_operation;
-    string efficiency;
+    double efficiency;
 
     void read() {
-        cout << "Enter the name of the compressor station: ";
+        cout << "Введите название компрессорной станции: ";
         cin >> name;
-        cout << "Enter the number of workshops: ";
-        cin >> num_workshops;
-        cout << "Enter the number of workshops in operation: ";
-        cin >> num_workshops_in_operation;
-        cout << "Enter efficiency: ";
-        cin >> efficiency;
+
+        cout << "Введите количество цехов: ";
+        while (!(cin >> num_workshops) || num_workshops <= 0) {
+            cerr << "Ошибка: Введите корректное значение для количества цехов: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+
+        cout << "Введите количество работающих цехов: ";
+        while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
+            cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        
+        cout << "Введите эффективность от 0 до 100: ";
+        while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
+            cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
     }
 
     void display() const {
-        cout << "Name: " << name << endl;
-        cout << "Number of workshops: " << num_workshops << endl;
-        cout << "Number of workshops in operation: " << num_workshops_in_operation << endl;
-        cout << "Efficiency: " << efficiency << endl;
+        cout << "Название: " << name << endl;
+        cout << "Количество цехов: " << num_workshops << endl;
+        cout << "Количество работающих цехов: " << num_workshops_in_operation << endl;
+        cout << "Эффективность: " << efficiency << endl;
+    }
+    
+    void editing_compressor_station(){
+        cout << "Введите новое количество работающих цехов: ";
+        while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
+            cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        
+        cout << "Введите новую эффективность: ";
+        while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
+            cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
     }
 };
-
-void saveData(const Pipe pipes[], const Compressor_Station stations[], int pipeCount, int stationCount, const string& filename) {
-    ofstream file(filename);
-    if (file.is_open()) {
-        for (int i = 0; i < pipeCount; ++i) {
-            file << "Pipe\n";
-            file << pipes[i].name << "\n";
-            file << pipes[i].length << "\n";
-            file << pipes[i].diameter << "\n";
-            file << pipes[i].under_repair << "\n";
-        }
-        for (int i = 0; i < stationCount; ++i) {
-            file << "CompressorStation\n";
-            file << stations[i].name << "\n";
-            file << stations[i].num_workshops << "\n";
-            file << stations[i].num_workshops_in_operation << "\n";
-            file << stations[i].efficiency << "\n";
-        }
-        file.close();
-        cout << "The data is saved in a file: " << filename << endl;
-    } else {
-        cerr << "File opening error!" << endl;
-    }
-}
-
-void loadData(Pipe pipes[], Compressor_Station stations[], int& pipeCount, int& stationCount, const string& filename) {
-    ifstream file(filename);
-    if (file.is_open()) {
-        pipeCount = 0;
-        stationCount = 0;
-        string line;
-        while (getline(file, line)) {
-            if (line == "Pipe") {
-                pipes[pipeCount].read();
-                file >> pipes[pipeCount].length >> pipes[pipeCount].diameter >> pipes[pipeCount].under_repair;
-                ++pipeCount;
-            } else if (line == "CompressorStation") {
-                stations[stationCount].read();
-                file >> stations[stationCount].num_workshops >> stations[stationCount].num_workshops_in_operation >> stations[stationCount].efficiency;
-                ++stationCount;
-            }
-        }
-        file.close();
-        cout << "Data loaded from a file: " << filename << endl;
-    } else {
-        cerr << "File opening error!" << endl;
-    }
-}
 
 int main() {
     Pipe pipes[MAX_PIPES];
     Compressor_Station stations[MAX_STATIONS];
-    int pipeCount = 0;
-    int stationCount = 0;
+    int pipe_count = 0;
+    int station_count = 0;
 
     while (true) {
-        cout << "Menu:\n";
-        cout << "1. Add a pipe\n";
-        cout << "2. Add a compressor station\n";
-        cout << "3. View all objects\n";
-        cout << "4. Edit a pipe\n";
-        cout << "5. Edit a compressor station\n";
-        cout << "6. Save\n";
-        cout << "7. Load\n";
-        cout << "0. Exit\n";
+        cout << "Меню:\n";
+        cout << "1. Добавить трубу\n";
+        cout << "2. Добавить компрессорную станцию\n";
+        cout << "3. Просмотреть все объекты\n";
+        cout << "4. Редактировать трубу\n";
+        cout << "5. Редактировать компрессорную станцию\n";
+        cout << "6. Сохранить\n";
+        cout << "7. Загрузить\n";
+        cout << "0. Выход\n";
 
         int choice;
         cin >> choice;
 
         switch (choice) {
             case 0:
+                exit(0);
                 break;
             case 1:{
-                if (pipeCount < MAX_PIPES) {
-                    pipes[pipeCount].read();
-                    ++pipeCount;
+                if (pipe_count < MAX_PIPES) {
+                    pipes[pipe_count].read();
+                    ++pipe_count;
                 } else {
-                    cerr << "Maximum number of pipes reached!" << endl;
+                    cerr << "Достигнуто максимальное количество труб!" << endl;
                 }
                 break;
             }
             case 2:{
-                if (stationCount < MAX_STATIONS) {
-                    stations[stationCount].read();
-                    ++stationCount;
+                if (station_count < MAX_STATIONS) {
+                    stations[station_count].read();
+                    ++station_count;
                 } else {
-                    cerr << "Maximum number of compressor stations reached!" << endl;
+                    cerr << "Достигнуто максимальное количество компрессорных станций!" << endl;
                 }
                 break;
             }
             case 3:{
-                cout << "Pipes:\n";
-                for (int i = 0; i < pipeCount; ++i) {
+                cout << "Трубы:\n";
+                for (int i = 0; i < pipe_count; ++i) {
                     pipes[i].display();
                     cout << endl;
                 }
-                cout << "Compressor stations:\n";
-                for (int i = 0; i < stationCount; ++i) {
+                cout << "Компрессорные станции:\n";
+                for (int i = 0; i < station_count; ++i) {
                     stations[i].display();
                     cout << endl;
                 }
                 break;
             }
             case 4:{
-                // Редактирование трубы
-                string pipeName;
+                string pipe_name;
                 cout << "Enter the name of the pipe to edit: ";
-                cin >> pipeName;
-                for (int i = 0; i < pipeCount; ++i) {
-                    if (pipes[i].name == pipeName) {
+                cin >> pipe_name;
+                for (int i = 0; i < pipe_count; ++i) {
+                    if (pipes[i].name == pipe_name) {
                         pipes[i].toggle_repair();
-                        cout << "Pipe condition '" << pipes[i].name << "' changed to 'Under repair: " << (pipes[i].under_repair ? "Yes" : "No") << "'\n";
+                        cout << "Состояние трубы '" << pipes[i].name << "' изменено 'На ремонте: " << (pipes[i].under_repair ? "Да" : "Нет") << "'\n";
                         break;
                     }
                 }
                 break;
             }
             case 5:{
-                // Редактирование КС
-                string stationName;
-                cout << "Enter the name of the compressor station to edit: ";
-                cin >> stationName;
-                for (int i = 0; i < stationCount; ++i) {
-                    if (stations[i].name == stationName) {
-                        // Добавьте здесь логику для редактирования КС
+                string station_name;
+                cout << "Введите название компрессорной станции для редактирования: ";
+                cin >> station_name;
+            for (int i = 0; i < station_count; ++i) {
+                    if (stations[i].name == station_name) {
+                        stations[i].editing_compressor_station();
                         break;
                     }
                 }
                 break;
             }
             case 6:{
-                string filename;
-                cout << "Enter the file name to save: ";
-                cin >> filename;
-                saveData(pipes, stations, pipeCount, stationCount, filename);
+                
                 break;
             }
             case 7:{
-                string loadFilename;
-                cout << "Enter the file name to load: ";
-                cin >> loadFilename;
-                loadData(pipes, stations, pipeCount, stationCount, loadFilename);
+                
                 break;
             }
             default:{
-                cout << "Invalid choice. Try again.\n";
+                cerr << "Неверный выбор. Попробуйте снова.\n";
                 break;
             }
         }
+        system("pause");
+        system("cls");
     }
 
     return 0;
