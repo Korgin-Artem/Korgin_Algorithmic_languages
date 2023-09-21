@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-//#include <cstdlib> // Для использования системных вызовов
 
 using namespace std;
 
@@ -293,8 +292,6 @@ int main() {
                 break;
             }
         }
-        //system("pause"); // Пауза для ожидания нажатия клавиши перед очисткой экрана
-        //system("clear"); // Очистка экрана в Linux/macOS (используйте "cls" для Windows)
     }
 
     return 0;
