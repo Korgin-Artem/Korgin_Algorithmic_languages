@@ -1,10 +1,11 @@
 #include <iostream>
 #include <fstream>
-//#include <cstdlib> // Для использования системных вызовов
 #include <string>
+//#include <cstdlib> // Для использования системных вызовов
 
 using namespace std;
 
+// Константы для максимальных значений объектов
 const int MAX_PIPES = 100;       // Максимальное количество труб
 const int MAX_STATIONS = 100;    // Максимальное количество компрессорных станций
 const int MAX_LIMITS = 1000;     // Максимальное количество игнорируемых пустых строк
@@ -159,10 +160,8 @@ void load_data(Pipe pipes[], Compressor_Station stations[], int& pipe_count, int
     string section;
 
     while (getline(file, line)) {
-        if (line == "Трубы") {
-            section = "Трубы";
-        } else if (line == "Компрессорные станции") {
-            section = "Компрессорные станции";
+        if (line == "Трубы" || line == "Компрессорные станции") {
+            section = line;
         } else if (section == "Трубы") {
             pipes[pipe_count].name = line;
             file >> pipes[pipe_count].length >> pipes[pipe_count].diameter >> pipes[pipe_count].under_repair;
@@ -179,7 +178,6 @@ void load_data(Pipe pipes[], Compressor_Station stations[], int& pipe_count, int
     file.close();
     cout << "Данные загружены из файла: " << file_name << endl;
 }
-
 
 int main() {
     Pipe pipes[MAX_PIPES];
@@ -199,13 +197,18 @@ int main() {
         cout << "0. Выход\n";
 
         int choice;
-        cin >> choice;
+        cout << "\nВведите цифру от 0 до 7, которая соответствует дальнейшему вашему действию: \n";
+        while (!(cin >> choice)) {
+            cerr << "Ошибка: Введите корректное значение: ";
+            cin.clear();
+            cin.ignore(MAX_LIMITS, '\n');
+        }
 
         switch (choice) {
             case 0:
                 exit(0); // Выход из программы
                 break;
-            case 1:{
+            case 1: {
                 if (pipe_count < MAX_PIPES) {
                     pipes[pipe_count].read(); // Ввод данных о трубе
                     ++pipe_count;
@@ -214,7 +217,7 @@ int main() {
                 }
                 break;
             }
-            case 2:{
+            case 2: {
                 if (station_count < MAX_STATIONS) {
                     stations[station_count].read(); // Ввод данных о компрессорной станции
                     ++station_count;
@@ -223,7 +226,7 @@ int main() {
                 }
                 break;
             }
-            case 3:{
+            case 3: {
                 cout << "Трубы:\n";
                 for (int i = 0; i < pipe_count; ++i) {
                     pipes[i].display(); // Отображение данных о трубе
@@ -236,56 +239,56 @@ int main() {
                 }
                 break;
             }
-            case 4:{
+            case 4: {
                 string pipe_name;
                 cout << "Введите название трубы для редактирования: ";
                 cin >> pipe_name;
-                bool f = true;
+                bool found = false;
                 for (int i = 0; i < pipe_count; ++i) {
                     if (pipes[i].name == pipe_name) {
                         pipes[i].toggle_repair(); // Переключение состояния ремонта трубы
                         cout << "Состояние трубы '" << pipes[i].name << "' изменено 'На ремонте: " << (pipes[i].under_repair ? "Да" : "Нет") << "'\n";
-                        f = false;
+                        found = true;
                         break;
                     }
                 }
-                if (f) {
-                    cerr << "Введенного названия трубы не найденно. Попробуйте ввести еще раз, либо создать трубу с заданным названием.\n";
+                if (!found) {
+                    cerr << "Труба с указанным названием не найдена. Попробуйте еще раз или создайте трубу с этим названием.\n";
                 }
                 break;
             }
-            case 5:{
+            case 5: {
                 string station_name;
                 cout << "Введите название компрессорной станции для редактирования: ";
                 cin >> station_name;
-                bool f = true;
+                bool found = false;
                 for (int i = 0; i < station_count; ++i) {
                     if (stations[i].name == station_name) {
                         stations[i].editing_compressor_station(); // Редактирование данных о компрессорной станции
-                        f = false;
+                        found = true;
                         break;
                     }
                 }
-                if (f) {
-                    cerr << "Введенного названия компрессорной станции не найденно. Попробуйте ввести еще раз, либо создать компрессорную станцию с заданным названием.\n";
+                if (!found) {
+                    cerr << "Компрессорная станция с указанным названием не найдена. Попробуйте еще раз или создайте станцию с этим названием.\n";
                 }
                 break;
             }
-            case 6:{
+            case 6: {
                 string file_name;
-                cout << "Введите имя файла для сохранения('имя файла.txt'): ";
+                cout << "Введите имя файла для сохранения ('имя файла.txt'): ";
                 cin >> file_name;
                 save_data(pipes, stations, pipe_count, station_count, file_name);
                 break;
             }
-            case 7:{
+            case 7: {
                 string load_file_name;
-                cout << "Введите имя файла для загрузки('имя файла.txt'): ";
+                cout << "Введите имя файла для загрузки ('имя файла.txt'): ";
                 cin >> load_file_name;
                 load_data(pipes, stations, pipe_count, station_count, load_file_name);
                 break;
             }
-            default:{
+            default: {
                 cerr << "Неверный выбор. Попробуйте снова.\n";
                 break;
             }
