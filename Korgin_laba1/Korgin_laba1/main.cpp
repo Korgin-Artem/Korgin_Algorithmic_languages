@@ -1,12 +1,13 @@
 #include <iostream>
-#include <cstdlib> // Для использования системных вызовов
+#include <fstream>
+//#include <cstdlib> // Для использования системных вызовов
 #include <string>
-#include <limits>
 
 using namespace std;
 
 const int MAX_PIPES = 100;       // Максимальное количество труб
 const int MAX_STATIONS = 100;    // Максимальное количество компрессорных станций
+const int MAX_LIMITS = 1000;     // Максимальное количество игнорируемых пустых строк
 
 // Структура для представления трубы
 struct Pipe {
@@ -24,14 +25,14 @@ struct Pipe {
         while (!(cin >> length) || length <= 0) {
             cerr << "Ошибка: Введите корректное значение для длины трубы (в км): ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
 
         cout << "Введите диаметр трубы: ";
         while (!(cin >> diameter) || diameter <= 0) {
             cerr << "Ошибка: Введите корректное значение для диаметра трубы: ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
 
         under_repair = false;
@@ -67,21 +68,21 @@ struct Compressor_Station {
         while (!(cin >> num_workshops) || num_workshops <= 0) {
             cerr << "Ошибка: Введите корректное значение для количества цехов: ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
 
         cout << "Введите количество работающих цехов: ";
         while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
             cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
 
         cout << "Введите эффективность от 0 до 100: ";
         while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
             cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
     }
 
@@ -99,17 +100,86 @@ struct Compressor_Station {
         while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
             cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
         
         cout << "Введите новую эффективность: ";
         while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
             cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(MAX_LIMITS, '\n');
         }
     }
 };
+
+// Функция для сохранения данных в файл
+void save_data(const Pipe pipes[], const Compressor_Station stations[], int pipe_count, int station_count, const string& file_name) {
+    ofstream file(file_name);
+
+    if (!file) {
+        cerr << "Ошибка открытия файла для записи: " << file_name << endl;
+        return;
+    }
+
+    // Сначала сохраняем информацию о трубах
+    file << "Трубы\n";
+    for (int i = 0; i < pipe_count; ++i) {
+        file << pipes[i].name << "\n";
+        file << pipes[i].length << "\n";
+        file << pipes[i].diameter << "\n";
+        file << pipes[i].under_repair << "\n"; // Записываем значение bool напрямую
+    }
+
+    // Затем сохраняем информацию о компрессорных станциях
+    file << "Компрессорные станции\n";
+    for (int i = 0; i < station_count; ++i) {
+        file << stations[i].name << "\n";
+        file << stations[i].num_workshops << "\n";
+        file << stations[i].num_workshops_in_operation << "\n";
+        file << stations[i].efficiency << "\n";
+    }
+
+    file.close();
+    cout << "Данные сохранены в файл: " << file_name << endl;
+}
+
+// Функция для загрузки данных из файла
+void load_data(Pipe pipes[], Compressor_Station stations[], int& pipe_count, int& station_count, const string& file_name) {
+    ifstream file(file_name);
+
+    if (!file) {
+        cerr << "Ошибка открытия файла для чтения: " << file_name << endl;
+        return;
+    }
+
+    // Очищаем существующие данные
+    pipe_count = 0;
+    station_count = 0;
+    string line;
+    string section;
+
+    while (getline(file, line)) {
+        if (line == "Трубы") {
+            section = "Трубы";
+        } else if (line == "Компрессорные станции") {
+            section = "Компрессорные станции";
+        } else if (section == "Трубы") {
+            pipes[pipe_count].name = line;
+            file >> pipes[pipe_count].length >> pipes[pipe_count].diameter >> pipes[pipe_count].under_repair;
+            ++pipe_count;
+            file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
+        } else if (section == "Компрессорные станции") {
+            stations[station_count].name = line;
+            file >> stations[station_count].num_workshops >> stations[station_count].num_workshops_in_operation >> stations[station_count].efficiency;
+            ++station_count;
+            file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
+        }
+    }
+
+    file.close();
+    cout << "Данные загружены из файла: " << file_name << endl;
+}
+
 
 int main() {
     Pipe pipes[MAX_PIPES];
@@ -170,12 +240,17 @@ int main() {
                 string pipe_name;
                 cout << "Введите название трубы для редактирования: ";
                 cin >> pipe_name;
+                bool f = true;
                 for (int i = 0; i < pipe_count; ++i) {
                     if (pipes[i].name == pipe_name) {
                         pipes[i].toggle_repair(); // Переключение состояния ремонта трубы
                         cout << "Состояние трубы '" << pipes[i].name << "' изменено 'На ремонте: " << (pipes[i].under_repair ? "Да" : "Нет") << "'\n";
+                        f = false;
                         break;
                     }
+                }
+                if (f) {
+                    cerr << "Введенного названия трубы не найденно. Попробуйте ввести еще раз, либо создать трубу с заданным названием.\n";
                 }
                 break;
             }
@@ -183,20 +258,31 @@ int main() {
                 string station_name;
                 cout << "Введите название компрессорной станции для редактирования: ";
                 cin >> station_name;
+                bool f = true;
                 for (int i = 0; i < station_count; ++i) {
                     if (stations[i].name == station_name) {
                         stations[i].editing_compressor_station(); // Редактирование данных о компрессорной станции
+                        f = false;
                         break;
                     }
+                }
+                if (f) {
+                    cerr << "Введенного названия компрессорной станции не найденно. Попробуйте ввести еще раз, либо создать компрессорную станцию с заданным названием.\n";
                 }
                 break;
             }
             case 6:{
-                // Добавить код для сохранения данных
+                string file_name;
+                cout << "Введите имя файла для сохранения('имя файла.txt'): ";
+                cin >> file_name;
+                save_data(pipes, stations, pipe_count, station_count, file_name);
                 break;
             }
             case 7:{
-                // Добавить код для загрузки данных
+                string load_file_name;
+                cout << "Введите имя файла для загрузки('имя файла.txt'): ";
+                cin >> load_file_name;
+                load_data(pipes, stations, pipe_count, station_count, load_file_name);
                 break;
             }
             default:{
@@ -204,8 +290,8 @@ int main() {
                 break;
             }
         }
-        system("pause"); // Пауза для ожидания нажатия клавиши перед очисткой экрана
-        system("clear"); // Очистка экрана в Linux/macOS (используйте "cls" для Windows)
+        //system("pause"); // Пауза для ожидания нажатия клавиши перед очисткой экрана
+        //system("clear"); // Очистка экрана в Linux/macOS (используйте "cls" для Windows)
     }
 
     return 0;
