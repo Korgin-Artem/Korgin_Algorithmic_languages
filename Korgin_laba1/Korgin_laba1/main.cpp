@@ -5,15 +5,18 @@
 
 using namespace std;
 
-// Константы для максимальных значений объектов
-const int MAX_LIMITS = 1000; // Максимальное количество игнорируемых пустых строк
+const int MAX_LIMITS = 10000; // Максимальное количество игнорируемых пустых строк
 
-// Структура для представления трубы
-struct Pipe {
+// Класс для представления трубы
+class Pipe {
+public:
     string name;
     double length;
     int diameter;
     bool under_repair;
+
+    // Конструктор по умолчанию
+    Pipe() : length(0), diameter(0), under_repair(false) {}
 
     // Метод для ввода данных о трубе
     void read() {
@@ -51,12 +54,16 @@ struct Pipe {
     }
 };
 
-// Структура для представления компрессорной станции
-struct Compressor_Station {
+// Класс для представления компрессорной станции
+class CompressorStation {
+public:
     string name;
     int num_workshops;
     int num_workshops_in_operation;
     double efficiency;
+
+    // Конструктор по умолчанию
+    CompressorStation() : num_workshops(0), num_workshops_in_operation(0), efficiency(0.0) {}
 
     // Метод для ввода данных о компрессорной станции
     void read() {
@@ -94,7 +101,7 @@ struct Compressor_Station {
     }
 
     // Метод для редактирования данных о компрессорной станции
-    void editing_compressor_station() {
+    void edit() {
         cout << "Введите новое количество работающих цехов: ";
         while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
             cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
@@ -133,7 +140,7 @@ void save_data_pipe(const vector<Pipe>& pipes, const string& file_name) {
 }
 
 // Функция для сохранения данных компрессорных станций в файл
-void save_data_station(const vector<Compressor_Station>& stations, const string& file_name) {
+void save_data_station(const vector<CompressorStation>& stations, const string& file_name) {
     ofstream file(file_name, ios::app);
 
     if (!file) {
@@ -142,7 +149,7 @@ void save_data_station(const vector<Compressor_Station>& stations, const string&
     }
 
     // Сохраняем информацию о компрессорных станциях
-    for (const Compressor_Station& station : stations) {
+    for (const CompressorStation& station : stations) {
         file << "Компрессорные станции\n";
         file << station.name << "\n";
         file << station.num_workshops << "\n";
@@ -179,7 +186,7 @@ void load_data_pipe(vector<Pipe>& pipes, const string& file_name) {
 }
 
 // Функция для загрузки данных компрессорной станции из файла
-void load_data_station(vector<Compressor_Station>& stations, const string& file_name) {
+void load_data_station(vector<CompressorStation>& stations, const string& file_name) {
     ifstream file(file_name);
 
     if (!file) {
@@ -193,7 +200,7 @@ void load_data_station(vector<Compressor_Station>& stations, const string& file_
 
     while (getline(file, line)) {
         if (line == "Компрессорные станции") {
-            Compressor_Station station;
+            CompressorStation station;
             file >> station.name >> station.num_workshops >> station.num_workshops_in_operation >> station.efficiency;
             stations.push_back(station);
             file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
@@ -205,7 +212,7 @@ void load_data_station(vector<Compressor_Station>& stations, const string& file_
 
 int main() {
     vector<Pipe> pipes;
-    vector<Compressor_Station> stations;
+    vector<CompressorStation> stations;
 
     while (true) {
         cout << "Меню:\n";
@@ -237,7 +244,7 @@ int main() {
                 break;
             }
             case 2: {
-                Compressor_Station station;
+                CompressorStation station;
                 station.read();
                 stations.push_back(station); // Добавляем компрессорную станцию в вектор
                 break;
@@ -249,7 +256,7 @@ int main() {
                     cout << endl;
                 }
                 cout << "Компрессорные станции:\n";
-                for (const Compressor_Station& station : stations) {
+                for (const CompressorStation& station : stations) {
                     station.display();
                     cout << endl;
                 }
@@ -278,9 +285,9 @@ int main() {
                 cout << "Введите название компрессорной станции для редактирования: ";
                 cin >> station_name;
                 bool found = false;
-                for (Compressor_Station& station : stations) {
+                for (CompressorStation& station : stations) {
                     if (station.name == station_name) {
-                        station.editing_compressor_station();
+                        station.edit();
                         found = true;
                         break;
                     }
