@@ -1,13 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 // Константы для максимальных значений объектов
-const int MAX_PIPES = 100;       // Максимальное количество труб
-const int MAX_STATIONS = 100;    // Максимальное количество компрессорных станций
-const int MAX_LIMITS = 1000;     // Максимальное количество игнорируемых пустых строк
+const int MAX_LIMITS = 1000; // Максимальное количество игнорируемых пустых строк
 
 // Структура для представления трубы
 struct Pipe {
@@ -93,7 +92,7 @@ struct Compressor_Station {
         cout << "Количество работающих цехов: " << num_workshops_in_operation << endl;
         cout << "Эффективность: " << efficiency << endl;
     }
-    
+
     // Метод для редактирования данных о компрессорной станции
     void editing_compressor_station() {
         cout << "Введите новое количество работающих цехов: ";
@@ -102,7 +101,7 @@ struct Compressor_Station {
             cin.clear();
             cin.ignore(MAX_LIMITS, '\n');
         }
-        
+
         cout << "Введите новую эффективность: ";
         while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
             cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
@@ -112,8 +111,8 @@ struct Compressor_Station {
     }
 };
 
-// Функция для сохранения данных в файл
-void save_data(const Pipe pipes[], const Compressor_Station stations[], int pipe_count, int station_count, const string& file_name) {
+// Функция для сохранения данных труб в файл
+void save_data_pipe(const vector<Pipe>& pipes, const string& file_name) {
     ofstream file(file_name);
 
     if (!file) {
@@ -121,30 +120,41 @@ void save_data(const Pipe pipes[], const Compressor_Station stations[], int pipe
         return;
     }
 
-    // Сначала сохраняем информацию о трубах
-    file << "Трубы\n";
-    for (int i = 0; i < pipe_count; ++i) {
-        file << pipes[i].name << "\n";
-        file << pipes[i].length << "\n";
-        file << pipes[i].diameter << "\n";
-        file << pipes[i].under_repair << "\n"; // Записываем значение bool напрямую
-    }
-
-    // Затем сохраняем информацию о компрессорных станциях
-    file << "Компрессорные станции\n";
-    for (int i = 0; i < station_count; ++i) {
-        file << stations[i].name << "\n";
-        file << stations[i].num_workshops << "\n";
-        file << stations[i].num_workshops_in_operation << "\n";
-        file << stations[i].efficiency << "\n";
+    // Сохраняем информацию о трубах
+    for (const Pipe& pipe : pipes) {
+        file << "Трубы\n";
+        file << pipe.name << "\n";
+        file << pipe.length << "\n";
+        file << pipe.diameter << "\n";
+        file << pipe.under_repair << "\n"; // Записываем значение bool напрямую
     }
 
     file.close();
-    cout << "Данные сохранены в файл: " << file_name << endl;
 }
 
-// Функция для загрузки данных из файла
-void load_data(Pipe pipes[], Compressor_Station stations[], int& pipe_count, int& station_count, const string& file_name) {
+// Функция для сохранения данных компрессорных станций в файл
+void save_data_station(const vector<Compressor_Station>& stations, const string& file_name) {
+    ofstream file(file_name, ios::app);
+
+    if (!file) {
+        cerr << "Ошибка открытия файла для записи: " << file_name << endl;
+        return;
+    }
+
+    // Сохраняем информацию о компрессорных станциях
+    for (const Compressor_Station& station : stations) {
+        file << "Компрессорные станции\n";
+        file << station.name << "\n";
+        file << station.num_workshops << "\n";
+        file << station.num_workshops_in_operation << "\n";
+        file << station.efficiency << "\n";
+    }
+
+    file.close();
+}
+
+// Функция для загрузки данных труб из файла
+void load_data_pipe(vector<Pipe>& pipes, const string& file_name) {
     ifstream file(file_name);
 
     if (!file) {
@@ -153,36 +163,49 @@ void load_data(Pipe pipes[], Compressor_Station stations[], int& pipe_count, int
     }
 
     // Очищаем существующие данные
-    pipe_count = 0;
-    station_count = 0;
+    pipes.clear();
     string line;
-    string section;
 
     while (getline(file, line)) {
-        if (line == "Трубы" || line == "Компрессорные станции") {
-            section = line;
-        } else if (section == "Трубы") {
-            pipes[pipe_count].name = line;
-            file >> pipes[pipe_count].length >> pipes[pipe_count].diameter >> pipes[pipe_count].under_repair;
-            ++pipe_count;
-            file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
-        } else if (section == "Компрессорные станции") {
-            stations[station_count].name = line;
-            file >> stations[station_count].num_workshops >> stations[station_count].num_workshops_in_operation >> stations[station_count].efficiency;
-            ++station_count;
+        if (line == "Трубы") {
+            Pipe pipe;
+            file >> pipe.name >> pipe.length >> pipe.diameter >> pipe.under_repair;
+            pipes.push_back(pipe);
             file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
         }
     }
 
     file.close();
-    cout << "Данные загружены из файла: " << file_name << endl;
+}
+
+// Функция для загрузки данных компрессорной станции из файла
+void load_data_station(vector<Compressor_Station>& stations, const string& file_name) {
+    ifstream file(file_name);
+
+    if (!file) {
+        cerr << "Ошибка открытия файла для чтения: " << file_name << endl;
+        return;
+    }
+
+    // Очищаем существующие данные
+    stations.clear();
+    string line;
+
+    while (getline(file, line)) {
+        if (line == "Компрессорные станции") {
+            Compressor_Station station;
+            file >> station.name >> station.num_workshops >> station.num_workshops_in_operation >> station.efficiency;
+            stations.push_back(station);
+            file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
+        }
+    }
+
+    file.close();
 }
 
 int main() {
-    Pipe pipes[MAX_PIPES];
-    Compressor_Station stations[MAX_STATIONS];
-    int pipe_count = 0;
-    int station_count = 0;
+    vector<Pipe> pipes;
+    vector<Compressor_Station> stations;
 
     while (true) {
         cout << "Меню:\n";
@@ -208,32 +231,26 @@ int main() {
                 exit(0); // Выход из программы
                 break;
             case 1: {
-                if (pipe_count < MAX_PIPES) {
-                    pipes[pipe_count].read(); // Ввод данных о трубе
-                    ++pipe_count;
-                } else {
-                    cerr << "Достигнуто максимальное количество труб!" << endl;
-                }
+                Pipe pipe;
+                pipe.read();
+                pipes.push_back(pipe); // Добавляем трубу в вектор
                 break;
             }
             case 2: {
-                if (station_count < MAX_STATIONS) {
-                    stations[station_count].read(); // Ввод данных о компрессорной станции
-                    ++station_count;
-                } else {
-                    cerr << "Достигнуто максимальное количество компрессорных станций!" << endl;
-                }
+                Compressor_Station station;
+                station.read();
+                stations.push_back(station); // Добавляем компрессорную станцию в вектор
                 break;
             }
             case 3: {
                 cout << "Трубы:\n";
-                for (int i = 0; i < pipe_count; ++i) {
-                    pipes[i].display(); // Отображение данных о трубе
+                for (const Pipe& pipe : pipes) {
+                    pipe.display();
                     cout << endl;
                 }
                 cout << "Компрессорные станции:\n";
-                for (int i = 0; i < station_count; ++i) {
-                    stations[i].display(); // Отображение данных о компрессорной станции
+                for (const Compressor_Station& station : stations) {
+                    station.display();
                     cout << endl;
                 }
                 break;
@@ -243,10 +260,10 @@ int main() {
                 cout << "Введите название трубы для редактирования: ";
                 cin >> pipe_name;
                 bool found = false;
-                for (int i = 0; i < pipe_count; ++i) {
-                    if (pipes[i].name == pipe_name) {
-                        pipes[i].toggle_repair(); // Переключение состояния ремонта трубы
-                        cout << "Состояние трубы '" << pipes[i].name << "' изменено 'На ремонте: " << (pipes[i].under_repair ? "Да" : "Нет") << "'\n";
+                for (Pipe& pipe : pipes) {
+                    if (pipe.name == pipe_name) {
+                        pipe.toggle_repair();
+                        cout << "Состояние трубы '" << pipe.name << "' изменено 'На ремонте: " << (pipe.under_repair ? "Да" : "Нет") << "'\n";
                         found = true;
                         break;
                     }
@@ -261,9 +278,9 @@ int main() {
                 cout << "Введите название компрессорной станции для редактирования: ";
                 cin >> station_name;
                 bool found = false;
-                for (int i = 0; i < station_count; ++i) {
-                    if (stations[i].name == station_name) {
-                        stations[i].editing_compressor_station(); // Редактирование данных о компрессорной станции
+                for (Compressor_Station& station : stations) {
+                    if (station.name == station_name) {
+                        station.editing_compressor_station();
                         found = true;
                         break;
                     }
@@ -277,14 +294,18 @@ int main() {
                 string file_name;
                 cout << "Введите имя файла для сохранения ('имя файла.txt'): ";
                 cin >> file_name;
-                save_data(pipes, stations, pipe_count, station_count, file_name);
+                save_data_pipe(pipes, file_name);
+                save_data_station(stations, file_name);
+                cout << "Данные сохранены в файл: " << file_name << endl;
                 break;
             }
             case 7: {
                 string load_file_name;
                 cout << "Введите имя файла для загрузки ('имя файла.txt'): ";
                 cin >> load_file_name;
-                load_data(pipes, stations, pipe_count, station_count, load_file_name);
+                load_data_pipe(pipes, load_file_name);
+                load_data_station(stations, load_file_name);
+                cout << "Данные загружены из файла: " << load_file_name << endl;
                 break;
             }
             default: {
