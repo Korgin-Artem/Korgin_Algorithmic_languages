@@ -21,7 +21,8 @@ public:
     // Метод для ввода данных о трубе
     void read() {
         cout << "Введите название трубы: ";
-        cin >> name;
+        cin >> ws;
+        getline(cin, name);
 
         cout << "Введите длину трубы (в км): ";
         while (!(cin >> length) || length <= 0) {
@@ -68,7 +69,8 @@ public:
     // Метод для ввода данных о компрессорной станции
     void read() {
         cout << "Введите название компрессорной станции: ";
-        cin >> name;
+        cin >> ws;
+        getline(cin, name);
 
         cout << "Введите количество цехов: ";
         while (!(cin >> num_workshops) || num_workshops <= 0) {
