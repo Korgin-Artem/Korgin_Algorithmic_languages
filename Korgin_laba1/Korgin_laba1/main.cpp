@@ -1,127 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
+#include <unordered_map>
+#include "Pipe.h"
+#include "CompressorStation.h"
 
 using namespace std;
 
-const int MAX_LIMITS = 10000; // Максимальное количество игнорируемых пустых строк
-
-// Класс для представления трубы
-class Pipe {
-public:
-    string name;
-    double length;
-    int diameter;
-    bool under_repair;
-
-    // Конструктор по умолчанию
-    Pipe() : length(0), diameter(0), under_repair(false) {}
-
-    // Метод для ввода данных о трубе
-    void read() {
-        cout << "Введите название трубы: ";
-        cin >> ws;
-        getline(cin, name);
-
-        cout << "Введите длину трубы (в км): ";
-        while (!(cin >> length) || length <= 0) {
-            cerr << "Ошибка: Введите корректное значение для длины трубы (в км): ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-
-        cout << "Введите диаметр трубы: ";
-        while (!(cin >> diameter) || diameter <= 0) {
-            cerr << "Ошибка: Введите корректное значение для диаметра трубы: ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-
-        under_repair = false;
-    }
-
-    // Метод для отображения данных о трубе
-    void display() const {
-        cout << "Название: " << name << endl;
-        cout << "Длина (км): " << length << endl;
-        cout << "Диаметр: " << diameter << endl;
-        cout << "На ремонте: " << (under_repair ? "Да" : "Нет") << endl;
-    }
-
-    // Метод для переключения состояния ремонта
-    void toggle_repair() {
-        under_repair = !under_repair;
-    }
-};
-
-// Класс для представления компрессорной станции
-class CompressorStation {
-public:
-    string name;
-    int num_workshops;
-    int num_workshops_in_operation;
-    double efficiency;
-
-    // Конструктор по умолчанию
-    CompressorStation() : num_workshops(0), num_workshops_in_operation(0), efficiency(0.0) {}
-
-    // Метод для ввода данных о компрессорной станции
-    void read() {
-        cout << "Введите название компрессорной станции: ";
-        cin >> ws;
-        getline(cin, name);
-
-        cout << "Введите количество цехов: ";
-        while (!(cin >> num_workshops) || num_workshops <= 0) {
-            cerr << "Ошибка: Введите корректное значение для количества цехов: ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-
-        cout << "Введите количество работающих цехов: ";
-        while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
-            cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-
-        cout << "Введите эффективность от 0 до 100: ";
-        while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
-            cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-    }
-
-    // Метод для отображения данных о компрессорной станции
-    void display() const {
-        cout << "Название: " << name << endl;
-        cout << "Количество цехов: " << num_workshops << endl;
-        cout << "Количество работающих цехов: " << num_workshops_in_operation << endl;
-        cout << "Эффективность: " << efficiency << endl;
-    }
-
-    // Метод для редактирования данных о компрессорной станции
-    void edit() {
-        cout << "Введите новое количество работающих цехов: ";
-        while (!(cin >> num_workshops_in_operation) || num_workshops_in_operation < 0 || num_workshops_in_operation > num_workshops) {
-            cerr << "Ошибка: Введите корректное значение для количества работающих цехов: ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-
-        cout << "Введите новую эффективность: ";
-        while (!(cin >> efficiency) || efficiency < 0 || efficiency > 100) {
-            cerr << "Ошибка: Введите корректное значение эффективности от 0 до 100: ";
-            cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
-        }
-    }
-};
-
-// Функция для сохранения данных труб в файл
-void save_data_pipe(const vector<Pipe>& pipes, const string& file_name) {
+void save_data_pipe(const unordered_map<int, Pipe>& pipes, const string& file_name) {
     ofstream file(file_name);
 
     if (!file) {
@@ -129,20 +15,20 @@ void save_data_pipe(const vector<Pipe>& pipes, const string& file_name) {
         return;
     }
 
-    // Сохраняем информацию о трубах
-    for (const Pipe& pipe : pipes) {
+    for (const auto& pipeEntry : pipes) {
+        const Pipe& pipe = pipeEntry.second;
         file << "Трубы\n";
-        file << pipe.name << "\n";
-        file << pipe.length << "\n";
-        file << pipe.diameter << "\n";
-        file << pipe.under_repair << "\n"; // Записываем значение bool напрямую
+        file << pipe.getId() << "\n";
+        file << pipe.getName() << "\n";
+        file << pipe.getLength() << "\n";
+        file << pipe.getDiameter() << "\n";
+        file << pipe.getRepairStatus() << "\n";
     }
 
     file.close();
 }
 
-// Функция для сохранения данных компрессорных станций в файл
-void save_data_station(const vector<CompressorStation>& stations, const string& file_name) {
+void save_data_station(const unordered_map<int, CompressorStation>& stations, const string& file_name) {
     ofstream file(file_name, ios::app);
 
     if (!file) {
@@ -150,20 +36,20 @@ void save_data_station(const vector<CompressorStation>& stations, const string& 
         return;
     }
 
-    // Сохраняем информацию о компрессорных станциях
-    for (const CompressorStation& station : stations) {
+    for (const auto& stationEntry : stations) {
+        const CompressorStation& station = stationEntry.second;
         file << "Компрессорные станции\n";
-        file << station.name << "\n";
-        file << station.num_workshops << "\n";
-        file << station.num_workshops_in_operation << "\n";
-        file << station.efficiency << "\n";
+        file << station.getId() << "\n";
+        file << station.getName() << "\n";
+        file << station.getNumWorkshops() << "\n";
+        file << station.getNumWorkshopsInOperation() << "\n";
+        file << station.getEfficiency() << "\n";
     }
 
     file.close();
 }
 
-// Функция для загрузки данных труб из файла
-void load_data_pipe(vector<Pipe>& pipes, const string& file_name) {
+void load_data_pipe(unordered_map<int, Pipe>& pipes, const string& file_name) {
     ifstream file(file_name);
 
     if (!file) {
@@ -171,24 +57,36 @@ void load_data_pipe(vector<Pipe>& pipes, const string& file_name) {
         return;
     }
 
-    // Очищаем существующие данные
     pipes.clear();
     string line;
 
     while (getline(file, line)) {
         if (line == "Трубы") {
             Pipe pipe;
-            file >> pipe.name >> pipe.length >> pipe.diameter >> pipe.under_repair;
-            pipes.push_back(pipe);
-            file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
+            int id;
+            file >> id >> ws;
+            pipe.setId(id);
+            file >> ws;
+            getline(file, line);
+            pipe.setName(line);
+            double length;
+            file >> length;
+            pipe.setLength(length);
+            int diameter;
+            file >> diameter;
+            pipe.setDiameter(diameter);
+            bool under_repair;
+            file >> under_repair;
+            pipe.setRepairStatus(under_repair);
+            pipes[pipe.getId()] = pipe;
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 
     file.close();
 }
 
-// Функция для загрузки данных компрессорной станции из файла
-void load_data_station(vector<CompressorStation>& stations, const string& file_name) {
+void load_data_station(unordered_map<int, CompressorStation>& stations, const string& file_name) {
     ifstream file(file_name);
 
     if (!file) {
@@ -196,16 +94,26 @@ void load_data_station(vector<CompressorStation>& stations, const string& file_n
         return;
     }
 
-    // Очищаем существующие данные
     stations.clear();
     string line;
 
     while (getline(file, line)) {
         if (line == "Компрессорные станции") {
             CompressorStation station;
-            file >> station.name >> station.num_workshops >> station.num_workshops_in_operation >> station.efficiency;
-            stations.push_back(station);
-            file.ignore(MAX_LIMITS, '\n'); // Пропускаем пустую строку
+            int id;
+            file >> id >> ws;
+            station.setId(id);
+            file >> ws;
+            getline(file, line);
+            station.setName(line);
+            int num_workshops, num_workshops_in_operation;
+            double efficiency;
+            file >> num_workshops >> num_workshops_in_operation >> efficiency;
+            station.setNumWorkshops(num_workshops);
+            station.setNumWorkshopsInOperation(num_workshops_in_operation);
+            station.setEfficiency(efficiency);
+            stations[station.getId()] = station;
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 
@@ -213,8 +121,8 @@ void load_data_station(vector<CompressorStation>& stations, const string& file_n
 }
 
 int main() {
-    vector<Pipe> pipes;
-    vector<CompressorStation> stations;
+    unordered_map<int, Pipe> pipes;
+    unordered_map<int, CompressorStation> stations;
 
     while (true) {
         cout << "Меню:\n";
@@ -223,83 +131,101 @@ int main() {
         cout << "3. Просмотреть все объекты\n";
         cout << "4. Редактировать трубу\n";
         cout << "5. Редактировать компрессорную станцию\n";
-        cout << "6. Сохранить\n";
-        cout << "7. Загрузить\n";
+        cout << "6. Удалить трубу\n";
+        cout << "7. Удалить компрессорную станцию\n";
+        cout << "8. Сохранить\n";
+        cout << "9. Загрузить\n";
         cout << "0. Выход\n";
 
         int choice;
-        cout << "\nВведите цифру от 0 до 7, которая соответствует дальнейшему вашему действию: \n";
+        cout << "\nВведите цифру от 0 до 9, которая соответствует дальнейшему вашему действию: \n";
         while (!(cin >> choice)) {
             cerr << "Ошибка: Введите корректное значение: ";
             cin.clear();
-            cin.ignore(MAX_LIMITS, '\n');
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
         switch (choice) {
             case 0:
-                exit(0); // Выход из программы
+                exit(0);
                 break;
             case 1: {
                 Pipe pipe;
                 pipe.read();
-                pipes.push_back(pipe); // Добавляем трубу в вектор
+                pipes[pipe.getId()] = pipe;
                 break;
             }
             case 2: {
                 CompressorStation station;
                 station.read();
-                stations.push_back(station); // Добавляем компрессорную станцию в вектор
+                stations[station.getId()] = station;
                 break;
             }
             case 3: {
                 cout << "Трубы:\n";
-                for (const Pipe& pipe : pipes) {
+                for (const auto& pipeEntry : pipes) {
+                    const Pipe& pipe = pipeEntry.second;
                     pipe.display();
                     cout << endl;
                 }
                 cout << "Компрессорные станции:\n";
-                for (const CompressorStation& station : stations) {
+                for (const auto& stationEntry : stations) {
+                    const CompressorStation& station = stationEntry.second;
                     station.display();
                     cout << endl;
                 }
                 break;
             }
             case 4: {
-                string pipe_name;
-                cout << "Введите название трубы для редактирования: ";
-                cin >> pipe_name;
-                bool found = false;
-                for (Pipe& pipe : pipes) {
-                    if (pipe.name == pipe_name) {
-                        pipe.toggle_repair();
-                        cout << "Состояние трубы '" << pipe.name << "' изменено 'На ремонте: " << (pipe.under_repair ? "Да" : "Нет") << "'\n";
-                        found = true;
-                        break;
-                    }
+                int pipe_id;
+                cout << "Введите ID трубы для редактирования: ";
+                while (!(cin >> pipe_id) || pipes.find(pipe_id) == pipes.end()) {
+                    cerr << "Ошибка: Введите существующий ID трубы: ";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 }
-                if (!found) {
-                    cerr << "Труба с указанным названием не найдена. Попробуйте еще раз или создайте трубу с этим названием.\n";
-                }
+                Pipe& pipe = pipes[pipe_id];
+                pipe.toggle_repair();
+                cout << "Состояние трубы с ID " << pipe_id << " изменено 'На ремонте: " << (pipe.getRepairStatus() ? "Да" : "Нет") << "'\n";
                 break;
             }
             case 5: {
-                string station_name;
-                cout << "Введите название компрессорной станции для редактирования: ";
-                cin >> station_name;
-                bool found = false;
-                for (CompressorStation& station : stations) {
-                    if (station.name == station_name) {
-                        station.edit();
-                        found = true;
-                        break;
-                    }
+                int station_id;
+                cout << "Введите ID компрессорной станции для редактирования: ";
+                while (!(cin >> station_id) || stations.find(station_id) == stations.end()) {
+                    cerr << "Ошибка: Введите существующий ID компрессорной станции: ";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 }
-                if (!found) {
-                    cerr << "Компрессорная станция с указанным названием не найдена. Попробуйте еще раз или создайте станцию с этим названием.\n";
-                }
+                CompressorStation& station = stations[station_id];
+                station.edit();
                 break;
             }
             case 6: {
+                int pipe_id;
+                cout << "Введите ID трубы для удаления: ";
+                while (!(cin >> pipe_id) || pipes.find(pipe_id) == pipes.end()) {
+                    cerr << "Ошибка: Введите существующий ID трубы: ";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                }
+                pipes.erase(pipe_id);
+                cout << "Труба с ID " << pipe_id << " удалена.\n";
+                break;
+            }
+            case 7: {
+                int station_id;
+                cout << "Введите ID компрессорной станции для удаления: ";
+                while (!(cin >> station_id) || stations.find(station_id) == stations.end()) {
+                    cerr << "Ошибка: Введите существующий ID компрессорной станции: ";
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                }
+                stations.erase(station_id);
+                cout << "Компрессорная станция с ID " << station_id << " удалена.\n";
+                break;
+            }
+            case 8: {
                 string file_name;
                 cout << "Введите имя файла для сохранения ('имя файла.txt'): ";
                 cin >> file_name;
@@ -308,7 +234,7 @@ int main() {
                 cout << "Данные сохранены в файл: " << file_name << endl;
                 break;
             }
-            case 7: {
+            case 9: {
                 string load_file_name;
                 cout << "Введите имя файла для загрузки ('имя файла.txt'): ";
                 cin >> load_file_name;

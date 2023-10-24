@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC45C0232AE7C2B8000683CA /* Pipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC45C0212AE7C2B8000683CA /* Pipe.cpp */; };
+		AC45C0262AE7C2CC000683CA /* CompressorStation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC45C0242AE7C2CC000683CA /* CompressorStation.cpp */; };
 		ACDF85432AB5CDB60037EFDD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACDF85422AB5CDB60037EFDD /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AC45C0212AE7C2B8000683CA /* Pipe.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipe.cpp; sourceTree = "<group>"; };
+		AC45C0222AE7C2B8000683CA /* Pipe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pipe.h; sourceTree = "<group>"; };
+		AC45C0242AE7C2CC000683CA /* CompressorStation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompressorStation.cpp; sourceTree = "<group>"; };
+		AC45C0252AE7C2CC000683CA /* CompressorStation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CompressorStation.h; sourceTree = "<group>"; };
 		ACDF853F2AB5CDB60037EFDD /* Korgin_laba1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Korgin_laba1; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDF85422AB5CDB60037EFDD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +64,10 @@
 			isa = PBXGroup;
 			children = (
 				ACDF85422AB5CDB60037EFDD /* main.cpp */,
+				AC45C0242AE7C2CC000683CA /* CompressorStation.cpp */,
+				AC45C0252AE7C2CC000683CA /* CompressorStation.h */,
+				AC45C0212AE7C2B8000683CA /* Pipe.cpp */,
+				AC45C0222AE7C2B8000683CA /* Pipe.h */,
 			);
 			path = Korgin_laba1;
 			sourceTree = "<group>";
@@ -89,7 +99,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					ACDF853E2AB5CDB60037EFDD = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -119,7 +129,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC45C0262AE7C2CC000683CA /* CompressorStation.cpp in Sources */,
 				ACDF85432AB5CDB60037EFDD /* main.cpp in Sources */,
+				AC45C0232AE7C2B8000683CA /* Pipe.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,9 +171,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -217,9 +231,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -239,6 +255,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -247,6 +264,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
