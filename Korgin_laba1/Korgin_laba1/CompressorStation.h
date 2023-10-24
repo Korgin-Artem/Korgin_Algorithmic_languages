@@ -17,16 +17,14 @@ public:
     int getNumWorkshopsInOperation() const;
     double getEfficiency() const;
     
-    void setId(int id);
+    void setId(int newId);
     void setName(const std::string& name);
     void setNumWorkshops(int num_workshops);
     void setNumWorkshopsInOperation(int num_workshops_in_operation);
     void setEfficiency(double efficiency);
-
+    
 private:
     int id;
-    static int nextId;
-
     std::string name;
     int num_workshops;
     int num_workshops_in_operation;

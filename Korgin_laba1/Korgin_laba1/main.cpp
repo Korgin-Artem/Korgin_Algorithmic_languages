@@ -123,6 +123,9 @@ void load_data_station(unordered_map<int, CompressorStation>& stations, const st
 int main() {
     unordered_map<int, Pipe> pipes;
     unordered_map<int, CompressorStation> stations;
+    int nextPipeId = 1; // Используем переменную для следующего доступного id для труб
+    int nextStationId = 1; // Используем переменную для следующего доступного id для станций
+
 
     while (true) {
         cout << "Меню:\n";
@@ -152,13 +155,17 @@ int main() {
             case 1: {
                 Pipe pipe;
                 pipe.read();
-                pipes[pipe.getId()] = pipe;
+                pipe.setId(nextPipeId);
+                pipes[nextPipeId] = pipe;
+                nextPipeId++; // Увеличиваем id для следующей трубы
                 break;
             }
             case 2: {
                 CompressorStation station;
                 station.read();
-                stations[station.getId()] = station;
+                station.setId(nextStationId);
+                stations[nextStationId] = station;
+                nextStationId++; // Увеличиваем id для следующей станции
                 break;
             }
             case 3: {

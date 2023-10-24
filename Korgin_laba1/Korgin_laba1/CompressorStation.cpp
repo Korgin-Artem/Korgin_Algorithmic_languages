@@ -1,10 +1,8 @@
 #include "CompressorStation.h"
 #include <iostream>
 
-int CompressorStation::nextId = 1;
-
-CompressorStation::CompressorStation() {
-    id = nextId++;
+CompressorStation::CompressorStation() : id(-1) {
+    // Изначально устанавливаем id в -1
 }
 
 void CompressorStation::read() {
@@ -78,7 +76,9 @@ double CompressorStation::getEfficiency() const {
     return efficiency;
 }
 
-void CompressorStation::setId(int id) { this->id = id; }
+void CompressorStation::setId(int newId) {
+    id = newId;
+}
 
 void CompressorStation::setName(const std::string& name) {
     this->name = name;
