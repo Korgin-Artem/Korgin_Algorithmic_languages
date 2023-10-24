@@ -120,6 +120,124 @@ void load_data_station(unordered_map<int, CompressorStation>& stations, const st
     file.close();
 }
 
+void editPipes(unordered_map<int, Pipe>& pipes) {
+    // Пакетное редактирование труб
+    int subChoice;
+    cout << "1. Редактировать все найденные трубы\n";
+    cout << "2. Редактировать подмножество труб (пользователь указывает ID)\n";
+    cout << "3. Отмена\n";
+    cout << "Введите цифру от 1 до 3 для выбора действия: ";
+    while (!(cin >> subChoice)) {
+        cerr << "Ошибка: Введите корректное значение: ";
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    switch (subChoice) {
+        case 1: {
+            // Редактировать все найденные трубы
+            int pipe_edit_choice;
+            cout << "1. Установить в ремонт\n";
+            cout << "2. Установить в рабочее состояние\n";
+            cout << "3. Отмена\n";
+            cout << "Введите цифру от 1 до 3 для выбора действия: ";
+            while (!(cin >> pipe_edit_choice)) {
+                cerr << "Ошибка: Введите корректное значение: ";
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+
+            switch (pipe_edit_choice) {
+                case 1: {
+                    // Установить все найденные трубы в ремонт
+                    for (auto& pipeEntry : pipes) {
+                        Pipe& pipe = pipeEntry.second;
+                        pipe.setRepairStatus(true);
+                    }
+                    cout << "Все найденные трубы установлены в ремонт.\n";
+                    break;
+                }
+                case 2: {
+                    // Установить все найденные трубы в рабочее состояние
+                    for (auto& pipeEntry : pipes) {
+                        Pipe& pipe = pipeEntry.second;
+                        pipe.setRepairStatus(false);
+                    }
+                    cout << "Все найденные трубы установлены в рабочее состояние.\n";
+                    break;
+                }
+                case 3:
+                    // Отмена
+                    break;
+                default:
+                    cerr << "Неверный выбор. Попробуйте снова.\n";
+                    break;
+            }
+            break;
+        }
+        case 2: {
+            vector<int> pipesToEdit;
+            string editChoice;
+
+            // Запрашиваем ID труб, которые нужно отредактировать
+            while (true) {
+                int pipeId;
+                cout << "Введите ID трубы для редактирования (0 для завершения): ";
+                cin >> pipeId;
+
+                if (pipeId == 0) {
+                    break;
+                }
+
+                auto it = pipes.find(pipeId);
+                if (it != pipes.end()) {
+                    pipesToEdit.push_back(pipeId);
+                } else {
+                    cerr << "Труба с ID " << pipeId << " не найдена.\n";
+                }
+            }
+
+            if (pipesToEdit.empty()) {
+                cout << "Нет труб для редактирования.\n";
+                return;
+            }
+
+            // Выводим информацию о выбранных трубах
+            cout << "Выбранные трубы для редактирования:\n";
+            for (int id : pipesToEdit) {
+                cout << "ID: " << id << " - ";
+                pipes[id].display();
+            }
+
+            // Предлагаем редактировать или удалить выбранные трубы
+            cout << "Вы хотите редактировать (E) или удалить (D) выбранные трубы (E/D)? ";
+            cin >> editChoice;
+
+            if (editChoice == "E" || editChoice == "e") {
+                // Редактирование выбранных труб
+                for (int id : pipesToEdit) {
+                    Pipe& pipe = pipes[id];
+                    pipe.toggle_repair();
+                    cout << "Состояние трубы с ID " << id << " изменено 'На ремонте: " << (pipe.getRepairStatus() ? "Да" : "Нет") << "'\n";
+                }
+            } else if (editChoice == "D" || editChoice == "d") {
+                // Удаление выбранных труб
+                for (int id : pipesToEdit) {
+                    pipes.erase(id);
+                    cout << "Труба с ID " << id << " удалена.\n";
+                }
+            }
+            break;
+        }
+        case 3:
+            // Отмена
+            break;
+        default:
+            cerr << "Неверный выбор. Попробуйте снова.\n";
+            break;
+    }
+}
+
 int main() {
     unordered_map<int, Pipe> pipes;
     unordered_map<int, CompressorStation> stations;
@@ -138,10 +256,15 @@ int main() {
         cout << "7. Удалить компрессорную станцию\n";
         cout << "8. Сохранить\n";
         cout << "9. Загрузить\n";
+        cout << "10. Поиск труб по названию\n";
+        cout << "11. Поиск труб по статусу ремонта\n";
+        cout << "12. Поиск КС по названию\n";
+        cout << "13. Поиск КС по проценту незадействованных цехов\n";
+        cout << "14. Пакетное редактирование труб\n";
         cout << "0. Выход\n";
 
         int choice;
-        cout << "\nВведите цифру от 0 до 9, которая соответствует дальнейшему вашему действию: \n";
+        cout << "\nВведите цифру от 0 до 14, которая соответствует дальнейшему вашему действию: \n";
         while (!(cin >> choice)) {
             cerr << "Ошибка: Введите корректное значение: ";
             cin.clear();
@@ -248,6 +371,72 @@ int main() {
                 load_data_pipe(pipes, load_file_name);
                 load_data_station(stations, load_file_name);
                 cout << "Данные загружены из файла: " << load_file_name << endl;
+                break;
+            }
+            case 10: {
+                // Поиск труб по названию
+                string searchName;
+                cout << "Введите название трубы для поиска: ";
+                cin >> searchName;
+                for (const auto& pipeEntry : pipes) {
+                    const Pipe& pipe = pipeEntry.second;
+                    if (pipe.getName() == searchName) {
+                        cout << "Результат поиска:\n";
+                        pipe.display();
+                        cout << endl;
+                    }
+                }
+                break;
+            }
+            case 11: {
+                // Поиск труб по статусу ремонта
+                bool searchRepairStatus;
+                cout << "Введите статус ремонта (1 - на ремонте, 0 - не на ремонте): ";
+                cin >> searchRepairStatus;
+                for (const auto& pipeEntry : pipes) {
+                    const Pipe& pipe = pipeEntry.second;
+                    if (pipe.getRepairStatus() == searchRepairStatus) {
+                        cout << "Результат поиска:\n";
+                        pipe.display();
+                        cout << endl;
+                    }
+                }
+                break;
+            }
+            case 12: {
+                // Поиск КС по названию
+                string searchName;
+                cout << "Введите название компрессорной станции для поиска: ";
+                cin >> searchName;
+                for (const auto& stationEntry : stations) {
+                    const CompressorStation& station = stationEntry.second;
+                    if (station.getName() == searchName) {
+                        cout << "Результат поиска:\n";
+                        station.display();
+                        cout << endl;
+                    }
+                }
+                break;
+            }
+            case 13: {
+                // Поиск КС по проценту незадействованных цехов
+                double searchUnutilizedPercentage;
+                cout << "Введите процент незадействованных цехов для поиска: ";
+                cin >> searchUnutilizedPercentage;
+                for (const auto& stationEntry : stations) {
+                    const CompressorStation& station = stationEntry.second;
+                    double unutilizedPercentage = (static_cast<double>(station.getNumWorkshops() - station.getNumWorkshopsInOperation()) / station.getNumWorkshops()) * 100.0;
+                    if (unutilizedPercentage >= searchUnutilizedPercentage) {
+                        cout << "Результат поиска:\n";
+                        station.display();
+                        cout << endl;
+                    }
+                }
+                break;
+            }
+            case 14: {
+                // Пакетное редактирование труб
+                editPipes(pipes);
                 break;
             }
             default: {
