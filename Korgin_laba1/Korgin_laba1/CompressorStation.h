@@ -17,7 +17,7 @@ public:
     int getNumWorkshopsInOperation() const;
     double getEfficiency() const;
     
-    void setId(int newId);
+    void setId(int id);
     void setName(const std::string& name);
     void setNumWorkshops(int num_workshops);
     void setNumWorkshopsInOperation(int num_workshops_in_operation);
@@ -25,6 +25,8 @@ public:
     
 private:
     int id;
+    static int nextId;
+    
     std::string name;
     int num_workshops;
     int num_workshops_in_operation;

@@ -7,6 +7,16 @@
 
 using namespace std;
 
+void logUserAction(const string& action) {
+    ofstream logfile("user_actions.log", ios::app);
+    if (logfile.is_open()) {
+        logfile << action << "\n";
+        logfile.close();
+    } else {
+        cerr << "Ошибка открытия файла для логирования.\n";
+    }
+}
+
 void save_data_pipe(const unordered_map<int, Pipe>& pipes, const string& file_name) {
     ofstream file(file_name);
 
@@ -241,9 +251,6 @@ void editPipes(unordered_map<int, Pipe>& pipes) {
 int main() {
     unordered_map<int, Pipe> pipes;
     unordered_map<int, CompressorStation> stations;
-    int nextPipeId = 1; // Используем переменную для следующего доступного id для труб
-    int nextStationId = 1; // Используем переменную для следующего доступного id для станций
-
 
     while (true) {
         cout << "Меню:\n";
@@ -271,27 +278,32 @@ int main() {
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
+        string action;
         switch (choice) {
             case 0:
+                action = "Пользователь выбрал: 0 (Выход)";
+                logUserAction(action);
                 exit(0);
                 break;
             case 1: {
+                action = "Пользователь выбрал: 1 (Добавить трубу)";
+                logUserAction(action);
                 Pipe pipe;
                 pipe.read();
-                pipe.setId(nextPipeId);
-                pipes[nextPipeId] = pipe;
-                nextPipeId++; // Увеличиваем id для следующей трубы
+                pipes.insert(make_pair(pipe.getId(), pipe));
                 break;
             }
             case 2: {
+                action = "Пользователь выбрал: 2 (Добавить компрессорную станцию)";
+                logUserAction(action);
                 CompressorStation station;
                 station.read();
-                station.setId(nextStationId);
-                stations[nextStationId] = station;
-                nextStationId++; // Увеличиваем id для следующей станции
+                stations.insert(make_pair(station.getId(), station));
                 break;
             }
             case 3: {
+                action = "Пользователь выбрал: 3 (Просмотреть все объекты)";
+                logUserAction(action);
                 cout << "Трубы:\n";
                 for (const auto& pipeEntry : pipes) {
                     const Pipe& pipe = pipeEntry.second;
@@ -307,6 +319,8 @@ int main() {
                 break;
             }
             case 4: {
+                action = "Пользователь выбрал: 4 (Редактировать трубу)";
+                logUserAction(action);
                 int pipe_id;
                 cout << "Введите ID трубы для редактирования: ";
                 while (!(cin >> pipe_id) || pipes.find(pipe_id) == pipes.end()) {
@@ -320,6 +334,8 @@ int main() {
                 break;
             }
             case 5: {
+                action = "Пользователь выбрал: 5 (Редактировать компрессорную станцию)";
+                logUserAction(action);
                 int station_id;
                 cout << "Введите ID компрессорной станции для редактирования: ";
                 while (!(cin >> station_id) || stations.find(station_id) == stations.end()) {
@@ -332,6 +348,8 @@ int main() {
                 break;
             }
             case 6: {
+                action = "Пользователь выбрал: 6 (Удалить трубу)";
+                logUserAction(action);
                 int pipe_id;
                 cout << "Введите ID трубы для удаления: ";
                 while (!(cin >> pipe_id) || pipes.find(pipe_id) == pipes.end()) {
@@ -344,6 +362,8 @@ int main() {
                 break;
             }
             case 7: {
+                action = "Пользователь выбрал: 7 (Удалить компрессорную станцию)";
+                logUserAction(action);
                 int station_id;
                 cout << "Введите ID компрессорной станции для удаления: ";
                 while (!(cin >> station_id) || stations.find(station_id) == stations.end()) {
@@ -356,6 +376,8 @@ int main() {
                 break;
             }
             case 8: {
+                action = "Пользователь выбрал: 8 (Сохранить данные)";
+                logUserAction(action);
                 string file_name;
                 cout << "Введите имя файла для сохранения ('имя файла.txt'): ";
                 cin >> file_name;
@@ -365,6 +387,8 @@ int main() {
                 break;
             }
             case 9: {
+                action = "Пользователь выбрал: 9 (Загрузить данные)";
+                logUserAction(action);
                 string load_file_name;
                 cout << "Введите имя файла для загрузки ('имя файла.txt'): ";
                 cin >> load_file_name;
@@ -374,6 +398,8 @@ int main() {
                 break;
             }
             case 10: {
+                action = "Пользователь выбрал: 10 (Поиск труб по названию)";
+                logUserAction(action);
                 // Поиск труб по названию
                 string searchName;
                 cout << "Введите название трубы для поиска: ";
@@ -389,6 +415,8 @@ int main() {
                 break;
             }
             case 11: {
+                action = "Пользователь выбрал: 11 (Поиск труб по статусу ремонта)";
+                logUserAction(action);
                 // Поиск труб по статусу ремонта
                 bool searchRepairStatus;
                 cout << "Введите статус ремонта (1 - на ремонте, 0 - не на ремонте): ";
@@ -404,6 +432,8 @@ int main() {
                 break;
             }
             case 12: {
+                action = "Пользователь выбрал: 12 (Поиск КС по названию)";
+                logUserAction(action);
                 // Поиск КС по названию
                 string searchName;
                 cout << "Введите название компрессорной станции для поиска: ";
@@ -419,6 +449,8 @@ int main() {
                 break;
             }
             case 13: {
+                action = "Пользователь выбрал: 13 (Поиск КС по проценту незадействованных цехов)";
+                logUserAction(action);
                 // Поиск КС по проценту незадействованных цехов
                 double searchUnutilizedPercentage;
                 cout << "Введите процент незадействованных цехов для поиска: ";
@@ -435,6 +467,8 @@ int main() {
                 break;
             }
             case 14: {
+                action = "Пользователь выбрал: 14 (Пакетное редактирование труб)";
+                logUserAction(action);
                 // Пакетное редактирование труб
                 editPipes(pipes);
                 break;

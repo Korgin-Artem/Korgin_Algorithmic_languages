@@ -1,8 +1,10 @@
 #include "Pipe.h"
 #include <iostream>
 
-Pipe::Pipe() : id(-1) {
-    // Изначально устанавливаем id в -1
+int Pipe::nextId = 1;
+
+Pipe::Pipe() {
+    id = nextId++;
 }
 
 void Pipe::read() {
@@ -60,8 +62,8 @@ bool Pipe::getRepairStatus() const {
     return under_repair;
 }
 
-void Pipe::setId(int newId) {
-    id = newId;
+void Pipe::setId(int id) {
+    this->id = id;
 }
 
 void Pipe::setName(const std::string& name) {

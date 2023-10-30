@@ -17,7 +17,7 @@ public:
     int getDiameter() const;
     bool getRepairStatus() const;
     
-    void setId(int newId);
+    void setId(int id);
     void setName(const std::string& name);
     void setLength(double length);
     void setDiameter(int diameter);
@@ -25,6 +25,8 @@ public:
 
 private:
     int id;
+    static int nextId;
+    
     std::string name;
     double length;
     int diameter;
