@@ -73,6 +73,33 @@ void display_id(unordered_map<int, F>& dict, int id) {
     }
 }
 
+template <typename T>
+void edit_multiple_items(unordered_map<int, T>& dict, const unordered_set<int>& ids) {
+    for (int id : ids) {
+        cout << "Are you sure you want to edit the pipe:\n";
+        display_id(dict, id);
+        cout << "0-No 1-Yes\n";
+        if(get_correct_value(0, 1)){
+            T& item = dict[id];
+            item.toggle_repair();
+        }
+    }
+    cout << "Editing completed for the selected items." << endl;
+}
+
+template <typename T>
+void delete_multiple_items(unordered_map<int, T>& dict, const unordered_set<int>& ids) {
+    for (int id : ids) {
+        cout << "Are you sure you want to delete the pipe:\n";
+        display_id(dict, id);
+        cout << "0-No 1-Yes\n";
+        if(get_correct_value(0, 1)){
+            dict.erase(id);
+        }
+    }
+    cout << "Deletion completed for the selected items." << endl;
+}
+
 int main() {
     redirect_output_wrapper cerr_out(cerr);
     //string time = format("{:%d-%m-%Y %H_%M_%S}", system_clock::now());
@@ -97,11 +124,13 @@ int main() {
         cout << "9. Delete a compressor station\n";
         cout << "10. Searching pipes by filter\n";
         cout << "11. Searching compressor station by filter\n";
+        cout << "12. Batch editing of pipes\n";
+        cout << "13. Batch deletion of pipes\n";
         cout << "0. Exit\n";
 
         int choice;
-        cout << "\nEnter a number from 0 to 11 to perform the corresponding action: ";
-        choice = get_correct_value<int>(0, 11);
+        cout << "\nEnter a number from 0 to 13 to perform the corresponding action: ";
+        choice = get_correct_value<int>(0, 13);
         switch (choice) {
             case 0:
                 exit(0);
@@ -219,6 +248,40 @@ int main() {
                     for (int i : find_by_filter(stations, filter_by_non_working, non_working)) {
                         display_id(stations, i);
                     }
+                }
+                break;
+            }
+            case 12: {
+                cout << "0 - By 'under repair' status\n1 - By pipe name\nChoose the criterion for selecting pipes for batch editing: ";
+                int filter_choice = get_correct_value<int>(0, 1);
+
+                if (filter_choice == 0) {
+                    cout << "0 - Not under repair\n1 - Under repair\nChoose the pipe status: ";
+                    bool under_repair = get_correct_value(0, 1);
+                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_status, under_repair);
+                    edit_multiple_items(pipes, selected_pipes);
+                } else if (filter_choice == 1) {
+                    cout << "Enter the pipe name for search: ";
+                    string name = get_str();
+                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_name, name);
+                    edit_multiple_items(pipes, selected_pipes);
+                }
+                break;
+            }
+            case 13: {
+                cout << "0 - By 'under repair' status\n1 - By pipe name\nChoose the criterion for selecting pipes for batch deletion: ";
+                int filter_choice = get_correct_value<int>(0, 1);
+
+                if (filter_choice == 0) {
+                    cout << "0 - Not under repair\n1 - Under repair\nChoose the pipe status: ";
+                    bool under_repair = get_correct_value(0, 1);
+                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_status, under_repair);
+                    delete_multiple_items(pipes, selected_pipes);
+                } else if (filter_choice == 1) {
+                    cout << "Enter the pipe name for search: ";
+                    string name = get_str();
+                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_name, name);
+                    delete_multiple_items(pipes, selected_pipes);
                 }
                 break;
             }
