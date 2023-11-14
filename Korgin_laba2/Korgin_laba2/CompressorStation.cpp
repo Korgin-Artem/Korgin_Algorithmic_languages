@@ -55,24 +55,15 @@ void CompressorStation::save_data(const std::unordered_map<int, CompressorStatio
     file.close();
 }
 
-void CompressorStation::load_data(std::unordered_map<int, CompressorStation>& stations, const std::string& file_name) {
-    ifstream file(file_name);
-    if (!file) {
-        cerr << "Error opening file for reading:: " << file_name << endl;
-        return;
+void CompressorStation::load_data(ifstream& read) {
+    if (read.is_open()) {
+        read >> id;
+        read >> name;
+        read >> num_workshops;
+        read >> num_workshops_in_operation;
+        read >> efficiency;
     }
-    stations.clear();
-    string line;
-    while (getline(file, line)) {
-        if (line == "Compressor Station") {
-            CompressorStation station;
-            int station_id;
-            file >> station_id >> ws;
-            file >> ws;
-            file >> station.name >> station.num_workshops >> station.num_workshops_in_operation >> station.efficiency;
-            stations[station_id] = station;
-            file.ignore(10000, '\n');
-        }
+    else {
+        cout << "Error!";
     }
-    file.close();
 }

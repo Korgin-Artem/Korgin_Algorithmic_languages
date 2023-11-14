@@ -54,24 +54,16 @@ void Pipe::save_data(const std::unordered_map<int, Pipe>& pipes, const string& f
     file.close();
 }
 
-void Pipe::load_data(std::unordered_map<int, Pipe>& pipes, const string& file_name) {
-    ifstream file(file_name);
-    if (!file) {
-        cerr << "Error opening file for reading: " << file_name << endl;
-        return;
-    }
-    pipes.clear();
-    string line;
-    while (getline(file, line)) {
-        if (line == "Pipe") {
-            Pipe pipe;
-            int pipe_id;
-            file >> pipe_id >> ws;
-            file >> ws;
-            file >> pipe.name >> pipe.length >> pipe.diameter >> pipe.under_repair;
-            pipes[pipe_id] = pipe;
-            file.ignore(10000, '\n');
+void Pipe::load_data(ifstream& read) {
+    if (read.is_open()) {
+            read >> id;
+            read >> name;
+            read >> length;
+            read >> diameter;
+            read >> under_repair;
+
         }
-    }
-    file.close();
+        else {
+            cout << "Error!";
+        }
 }

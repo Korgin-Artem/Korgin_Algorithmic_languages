@@ -23,5 +23,5 @@ public:
 
     void save_data(const std::unordered_map<int, CompressorStation>& stations, const std::string& file_name);
 
-    void load_data(std::unordered_map<int, CompressorStation>& stations, const std::string& file_name);
+    void load_data(std::ifstream& read);
 };

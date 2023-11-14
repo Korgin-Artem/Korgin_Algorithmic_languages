@@ -5,7 +5,7 @@ class Pipe {
 private:
     int id;
     static int Nextid;
-    
+
 public:
     inline int getid() const { return id; };
     std::string name;
@@ -23,5 +23,5 @@ public:
 
     void save_data(const std::unordered_map<int, Pipe>& pipes, const std::string& file_name);
 
-    void load_data(std::unordered_map<int, Pipe>& pipes, const std::string& file_name);
+    void load_data(std::ifstream& read);
 };
