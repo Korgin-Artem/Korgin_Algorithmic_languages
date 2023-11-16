@@ -18,7 +18,7 @@ int get_valid_id(const string& message, const std::unordered_map<int, K>& items)
     int id;
     cout << message;
     while (!(cin >> id) || items.find(id) == items.end()) {
-        cerr << "Ошибка: Введите существующий ID: ";
+        cerr << "Error! Enter an exiting ID: ";
         cin.clear();
         cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
         cout << message;
