@@ -17,11 +17,11 @@ public:
 
     void read();
 
-    void display() const;
-
     void edit();
 
-    void save_data(const std::unordered_map<int, CompressorStation>& stations, const std::string& file_name);
+    void save_data(std::ofstream& out);
 
     void load_data(std::ifstream& read);
+    
+    friend std::ostream& operator << (std::ostream& out, const CompressorStation& cs);
 };

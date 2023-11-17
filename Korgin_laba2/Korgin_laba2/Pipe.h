@@ -17,11 +17,11 @@ public:
 
     void read();
 
-    void display() const;
-
     void toggle_repair();
 
-    void save_data(const std::unordered_map<int, Pipe>& pipes, const std::string& file_name);
+    void save_data(std::ofstream& out);
 
     void load_data(std::ifstream& read);
+    
+    friend std::ostream& operator << (std::ostream& out, const Pipe& p);
 };

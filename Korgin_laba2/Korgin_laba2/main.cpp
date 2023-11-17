@@ -39,7 +39,7 @@ bool filter_by_status(const Pipe& dict, bool status) {
 }
 
 bool filter_by_non_working(const CompressorStation& dict, int non_working) {
-    return dict.num_workshops - dict.num_workshops_in_operation == dict.num_workshops * non_working / 100;
+    return dict.num_workshops - dict.num_workshops_in_operation >= dict.num_workshops * non_working / 100;
 }
 
 template <typename T1, typename T2>
@@ -55,21 +55,15 @@ unordered_set<int> find_by_filter(const unordered_map<int, T1>& dict, filter<T1,
 
 template <typename M>
 void display_data(unordered_map<int, M>& dict) {
-    for (auto const& pair : dict) {
-        M value = pair.second;
-        value.display();
-        cout << endl;
+    for (auto& [id, pipe] : dict) {
+        cout << pipe << endl;
     }
 }
 
 template <typename F>
 void display_id(unordered_map<int, F>& dict, int id) {
-    for (auto const& pair : dict) {
-        if (id == pair.first) {
-            F value = pair.second;
-            value.display();
-            cout << endl;
-        }
+    for (auto& [id, pipe] : dict) {
+        cout << pipe << endl;
     }
 }
 
@@ -148,33 +142,59 @@ int main() {
                 break;
             }
             case 3: {
-                cout << "Pipes:\n";
-                display_data(pipes);
-                cout << "Compressor Stations:\n";
-                display_data(stations);
+                if (pipes.size() != 0){
+                    cout << "Pipes:\n";
+                    for (auto& [id, pipe] : pipes){
+                        cout << pipe << endl;
+                    }
+                }else{
+                    cout << "No pipes\n";
+                }
+                if(stations.size() != 0){
+                    cout << "Compressor Stations:\n";
+                    for (auto& [id, station] : stations){
+                        cout << station << endl;
+                    }
+                }else{
+                    cout << "No compressor stations\n";
+                }
                 break;
             }
             case 4: {
-                int pipe_id = get_valid_id("Enter the pipe ID for editing: ", pipes);
-                Pipe& pipe = pipes[pipe_id];
-                pipe.toggle_repair();
-                cout << "The state of the pipe with ID " << pipe_id << " has been changed to 'Under repair: " << (pipe.under_repair ? "Yes" : "No") << "'\n";
+                if (pipes.size() != 0){
+                    int pipe_id = get_valid_id("Enter the pipe ID for editing: ", pipes);
+                    Pipe& pipe = pipes[pipe_id];
+                    pipe.toggle_repair();
+                    cout << "The state of the pipe with ID " << pipe_id << " has been changed to 'Under repair: " << (pipe.under_repair ? "Yes" : "No") << "'\n";
+                }else{
+                    cout << "No data\n";
+                }
                 break;
             }
             case 5: {
-                int station_id = get_valid_id("Enter the compressor station ID for editing: ", stations);
-                CompressorStation& station = stations[station_id];
-                station.edit();
+                if(stations.size() != 0){
+                    int station_id = get_valid_id("Enter the compressor station ID for editing: ", stations);
+                    CompressorStation& station = stations[station_id];
+                    station.edit();
+                }else{
+                    cout << "No data\n";
+                }
                 break;
             }
             case 6: {
-                string file_name;
                 cout << "Enter the file name to save ('file name.txt'): ";
-                cin >> file_name;
-                Pipe pipe;
-                pipe.save_data(pipes, file_name);
-                CompressorStation station;
-                station.save_data(stations, file_name);
+                string file_name = get_str();
+                ofstream out(file_name);
+                for (auto const& p : pipes){
+                    if(!p.second.name.empty()){
+                        pipes[p.first].save_data(out);
+                    }
+                }
+                for (auto const& cs : stations){
+                    if(!cs.second.name.empty()){
+                        stations[cs.first].save_data(out);
+                    }
+                }
                 cout << "Data saved to file: " << file_name << endl;
                 break;
             }
@@ -183,7 +203,7 @@ int main() {
                 string file_name;
                 string read_file = get_str();
                 ifstream read(read_file);
-                if (read.peek() == std::ifstream::traits_type::eof()) {
+                if (read.peek() == ifstream::traits_type::eof()) {
                     cout << "Error! There is no data in the file.\n";
                 }
                 else {
@@ -206,82 +226,106 @@ int main() {
                 break;
             }
             case 8: {
-                int pipe_id = get_valid_id("Enter the pipe ID for delete: ", pipes);
-                pipes.erase(pipe_id);
-                cout << "Pipe with ID " << pipe_id << " has been deleted.\n";
+                if (pipes.size() != 0){
+                    int pipe_id = get_valid_id("Enter the pipe ID for delete: ", pipes);
+                    pipes.erase(pipe_id);
+                    cout << "Pipe with ID " << pipe_id << " has been deleted.\n";
+                }else{
+                    cout << "No data\n";
+                }
                 break;
             }
             case 9: {
-                int station_id = get_valid_id("Enter the ID of the compressor station to delete: ", stations);
-                stations.erase(station_id);
-                cout << "Compressor station with ID " << station_id << " has been deleted.\n";
+                if(stations.size() != 0){
+                    int station_id = get_valid_id("Enter the ID of the compressor station to delete: ", stations);
+                    stations.erase(station_id);
+                    cout << "Compressor station with ID " << station_id << " has been deleted.\n";
+                }else{
+                    cout << "No data\n";
+                }
                 break;
             }
             case 10:{
-                cout << "0 - By the 'under repair' status \n1 - By pipe name\nChoose by which filter you want to filter: ";
-                if (get_correct_value(0, 1)) {
-                    cout << "Enter the name of the pipes you want to find: ";
-                    string name = get_str();
-                    for (int i : find_by_filter(pipes, filter_by_name, name)) {
-                        display_id(pipes, i);
+                if (pipes.size() != 0){
+                    cout << "0 - By the 'under repair' status \n1 - By pipe name\nChoose by which filter you want to filter: ";
+                    if (get_correct_value(0, 1)) {
+                        cout << "Enter the name of the pipes you want to find: ";
+                        string name = get_str();
+                        for (int i : find_by_filter(pipes, filter_by_name, name)) {
+                            display_id(pipes, i);
+                        }
+                    }else {
+                        cout << "0 - pipe not under repair\n1 - pipe under repair\nEnter the number: ";
+                        bool under_repair = get_correct_value(0, 1);
+                        for (int i : find_by_filter(pipes, filter_by_status, under_repair)) {
+                            display_id(pipes, i);
+                        }
                     }
-                }else {
-                    cout << "0 - pipe not under repair\n1 - pipe under repair\nEnter the number: ";
-                    bool under_repair = get_correct_value(0, 1);
-                    for (int i : find_by_filter(pipes, filter_by_status, under_repair)) {
-                        display_id(pipes, i);
-                    }
+                }else{
+                    cout << "No data\n";
                 }
                 break;
             }
             case 11:{
-                cout << "0 - By the percentage of unused workshops\n1- By the name of compressor stations\nChoose by which filter you want to filter: ";
-                if (get_correct_value(0, 1)) {
-                    cout << "Enter the name of the compressor station you want to find: ";
-                    string name = get_str();
-                    for (int i : find_by_filter(stations, filter_by_name, name)) {
-                        display_id(stations, i);
+                if(stations.size() != 0){
+                    cout << "0 - By the percentage of unused workshops\n1- By the name of compressor stations\nChoose by which filter you want to filter: ";
+                    if (get_correct_value(0, 1)) {
+                        cout << "Enter the name of the compressor station you want to find: ";
+                        string name = get_str();
+                        for (int i : find_by_filter(stations, filter_by_name, name)) {
+                            display_id(stations, i);
+                        }
+                    }else {
+                        cout << "Enter the efficiency of the compressor stations you want to find: ";
+                        int non_working = get_correct_value(0, 100);
+                        for (int i : find_by_filter(stations, filter_by_non_working, non_working)) {
+                            display_id(stations, i);
+                        }
                     }
-                }else {
-                    cout << "Enter the efficiency of the compressor stations you want to find: ";
-                    int non_working = get_correct_value(0, 100);
-                    for (int i : find_by_filter(stations, filter_by_non_working, non_working)) {
-                        display_id(stations, i);
-                    }
+                }else{
+                    cout << "No data\n";
                 }
                 break;
             }
             case 12: {
-                cout << "0 - By 'under repair' status\n1 - By pipe name\nChoose the criterion for selecting pipes for batch editing: ";
-                int filter_choice = get_correct_value<int>(0, 1);
-
-                if (filter_choice == 0) {
-                    cout << "0 - Not under repair\n1 - Under repair\nChoose the pipe status: ";
-                    bool under_repair = get_correct_value(0, 1);
-                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_status, under_repair);
-                    edit_multiple_items(pipes, selected_pipes);
-                } else if (filter_choice == 1) {
-                    cout << "Enter the pipe name for search: ";
-                    string name = get_str();
-                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_name, name);
-                    edit_multiple_items(pipes, selected_pipes);
+                if (pipes.size() != 0){
+                    cout << "0 - By 'under repair' status\n1 - By pipe name\nChoose the criterion for selecting pipes for batch editing: ";
+                    int filter_choice = get_correct_value<int>(0, 1);
+                    
+                    if (filter_choice == 0) {
+                        cout << "0 - Not under repair\n1 - Under repair\nChoose the pipe status: ";
+                        bool under_repair = get_correct_value(0, 1);
+                        unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_status, under_repair);
+                        edit_multiple_items(pipes, selected_pipes);
+                    } else if (filter_choice == 1) {
+                        cout << "Enter the pipe name for search: ";
+                        string name = get_str();
+                        unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_name, name);
+                        edit_multiple_items(pipes, selected_pipes);
+                    }
+                }else{
+                    cout << "No data\n";
                 }
                 break;
             }
             case 13: {
-                cout << "0 - By 'under repair' status\n1 - By pipe name\nChoose the criterion for selecting pipes for batch deletion: ";
-                int filter_choice = get_correct_value<int>(0, 1);
-
-                if (filter_choice == 0) {
-                    cout << "0 - Not under repair\n1 - Under repair\nChoose the pipe status: ";
-                    bool under_repair = get_correct_value(0, 1);
-                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_status, under_repair);
-                    delete_multiple_items(pipes, selected_pipes);
-                } else if (filter_choice == 1) {
-                    cout << "Enter the pipe name for search: ";
-                    string name = get_str();
-                    unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_name, name);
-                    delete_multiple_items(pipes, selected_pipes);
+                if (pipes.size() != 0){
+                    cout << "0 - By 'under repair' status\n1 - By pipe name\nChoose the criterion for selecting pipes for batch deletion: ";
+                    int filter_choice = get_correct_value<int>(0, 1);
+                    
+                    if (filter_choice == 0) {
+                        cout << "0 - Not under repair\n1 - Under repair\nChoose the pipe status: ";
+                        bool under_repair = get_correct_value(0, 1);
+                        unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_status, under_repair);
+                        delete_multiple_items(pipes, selected_pipes);
+                    } else if (filter_choice == 1) {
+                        cout << "Enter the pipe name for search: ";
+                        string name = get_str();
+                        unordered_set<int> selected_pipes = find_by_filter(pipes, filter_by_name, name);
+                        delete_multiple_items(pipes, selected_pipes);
+                    }
+                }else{
+                    cout << "No data\n";
                 }
                 break;
             }
