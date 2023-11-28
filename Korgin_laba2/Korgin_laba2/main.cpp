@@ -53,17 +53,12 @@ unordered_set<int> find_by_filter(const unordered_map<int, T1>& dict, filter<T1,
     return ids;
 }
 
-template <typename M>
-void display_data(unordered_map<int, M>& dict) {
-    for (auto& [id, pipe] : dict) {
-        cout << pipe << endl;
-    }
-}
-
 template <typename F>
 void display_id(unordered_map<int, F>& dict, int id) {
-    for (auto& [id, pipe] : dict) {
-        cout << pipe << endl;
+    for (auto const& pair : dict) {
+        if (id == pair.first) {
+            cout << pair.second << endl;
+        }
     }
 }
 
