@@ -387,7 +387,6 @@ int main() {
                         pipe.connecting_with_cs(in_id, out_id);
                         pipes.insert(make_pair(pipe.getid(), pipe));
                     }
-                    stations[out_id].connecting_with_pipes();
                     cout << "Pipe connected successfully.\n";
                 } else {
                     cout << "Insufficient data to establish connections.\n";
