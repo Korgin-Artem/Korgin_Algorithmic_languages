@@ -89,9 +89,18 @@ void delete_multiple_items(unordered_map<int, T>& dict, const unordered_set<int>
     cout << "Deletion completed for the selected items." << endl;
 }
 
+template <typename T>
+int get_correct_id(unordered_map<int, T>& dict){
+    int checking_the_key = get_correct_value(1, INT_MAX);
+    while(dict.find(checking_the_key) != dict.end()){
+        cout << "This is no  with this id! Enter the correct id: ";
+        checking_the_key = get_correct_value(1, INT_MAX);
+    }
+    return checking_the_key;
+}
+
 int main() {
     redirect_output_wrapper cerr_out(cerr);
-    //string time = format("{:%d-%m-%Y %H_%M_%S}", system_clock::now());
     ofstream logfile("log.txt");
     if (logfile) {
         cerr_out.redirect(logfile);
@@ -115,11 +124,12 @@ int main() {
         cout << "11. Searching compressor station by filter\n";
         cout << "12. Batch editing of pipes\n";
         cout << "13. Batch deletion of pipes\n";
+        cout << "14. Add connection of pipes and compressor stations to the gas transmission network\n";
         cout << "0. Exit\n";
 
         int choice;
-        cout << "\nEnter a number from 0 to 13 to perform the corresponding action: ";
-        choice = get_correct_value<int>(0, 13);
+        cout << "\nEnter a number from 0 to 14 to perform the corresponding action: ";
+        choice = get_correct_value<int>(0, 14);
         switch (choice) {
             case 0:
                 exit(0);
@@ -321,6 +331,48 @@ int main() {
                     }
                 }else{
                     cout << "No data\n";
+                }
+                break;
+            }
+            case 14: {
+                if (pipes.size() != 0 && stations.size() != 0) {
+                    int in_id, out_id, pipe_diameter;
+
+                    cout << "Enter the ID of the input compressor station: ";
+                    in_id = get_correct_value<int>(1, INT_MAX);
+
+                    cout << "Enter the ID of the output compressor station: ";
+                    out_id = get_correct_value<int>(1, INT_MAX);
+
+                    pipe_diameter = get_correct_diameter();
+
+                    // Check for any available pipe with the specified diameter
+                    bool pipe_found = false;
+                    for (auto& [id, pipe] : pipes) {
+                        if (pipe.diameter == pipe_diameter && pipe.id_cs_of_the_entrance == 0 && pipe.id_cs_of_the_exit == 0) {
+                            pipe.connecting_with_cs(in_id, out_id);
+                            pipe_found = true;
+                            break;
+                        }
+                    }
+
+                    // If no available pipe, create a new one
+                    if (!pipe_found) {
+                        cout << "The pipe with the entered diameter does not exist! Create a pipe.\n";
+                        Pipe pipe;
+                        pipe.read();
+                        //pipe.diameter = pipe_diameter;
+                        pipe.connecting_with_cs(in_id, out_id);
+                        pipes.insert(make_pair(pipe.getid(), pipe));
+                    }
+
+                    // Increment the number of connected pipes for the output station
+                    stations[in_id].connecting_with_pipes();
+                    stations[out_id].connecting_with_pipes();
+
+                    cout << "Pipe connected successfully.\n";
+                } else {
+                    cout << "Insufficient data to establish connections.\n";
                 }
                 break;
             }

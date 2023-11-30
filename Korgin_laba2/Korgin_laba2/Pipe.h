@@ -12,12 +12,16 @@ public:
     int length;
     int diameter;
     bool under_repair;
+    int id_cs_of_the_entrance; // ID компрессорной станции входа
+    int id_cs_of_the_exit;   // ID компрессорной станции выхода
 
     Pipe();
 
     void read();
 
     void toggle_repair();
+    
+    void connecting_with_cs(int id_from, int id_to);
 
     void save_data(std::ofstream& out);
 

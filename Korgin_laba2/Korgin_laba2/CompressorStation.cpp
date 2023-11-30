@@ -19,6 +19,7 @@ void CompressorStation::read() {
     num_workshops_in_operation = get_correct_value<int>(0, num_workshops);
     std::cout << "Enter the efficiency (0 to 100): ";
     efficiency = get_correct_value<double>(0.0, 100.0);
+    number_of_connected_pipes = 0;
 }
 
 std::ostream& operator << (std::ostream& out, const CompressorStation& cs){
@@ -27,12 +28,17 @@ std::ostream& operator << (std::ostream& out, const CompressorStation& cs){
     out << "Number of workshops: " << cs.num_workshops << "\n";
     out << "Number of workshops in operation: " << cs.num_workshops_in_operation << "\n";
     out << "Efficiency: " << cs.efficiency << "\n";
+    out << "Number_of_connected_pipes: " << cs.number_of_connected_pipes << "\n";
     return out;
 }
 
 void CompressorStation::edit() {
     std::cout << "Enter the new number of workshops in operation: ";
     num_workshops_in_operation = get_correct_value<int>(0, num_workshops);
+}
+
+void CompressorStation::connecting_with_pipes(){
+    number_of_connected_pipes++;
 }
 
 void CompressorStation::save_data(ofstream& out) {
@@ -43,6 +49,7 @@ void CompressorStation::save_data(ofstream& out) {
         out << num_workshops << "\n";
         out << num_workshops_in_operation << "\n";
         out << efficiency << "\n";
+        out << number_of_connected_pipes << "\n";
     }
 }
 
@@ -53,6 +60,7 @@ void CompressorStation::load_data(ifstream& read) {
         read >> num_workshops;
         read >> num_workshops_in_operation;
         read >> efficiency;
+        read >> number_of_connected_pipes;
     }
     else {
         cout << "Error!";

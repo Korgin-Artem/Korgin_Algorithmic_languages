@@ -12,12 +12,15 @@ public:
     int num_workshops;
     int num_workshops_in_operation;
     double efficiency;
+    int number_of_connected_pipes;
 
     CompressorStation();
 
     void read();
 
     void edit();
+    
+    void connecting_with_pipes();
 
     void save_data(std::ofstream& out);
 
