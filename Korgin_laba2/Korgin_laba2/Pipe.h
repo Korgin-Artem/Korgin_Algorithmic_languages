@@ -12,8 +12,8 @@ public:
     int length;
     int diameter;
     bool under_repair;
-    int id_cs_of_the_entrance; // ID компрессорной станции входа
-    int id_cs_of_the_exit;   // ID компрессорной станции выхода
+    int id_cs_of_the_entrance;
+    int id_cs_of_the_exit;
 
     Pipe();
 
