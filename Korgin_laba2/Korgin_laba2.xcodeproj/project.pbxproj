@@ -11,6 +11,8 @@
 		AC01D34D2B02C73E00EAA9E9 /* Pipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC01D34B2B02C73E00EAA9E9 /* Pipe.cpp */; };
 		AC01D3502B02C75300EAA9E9 /* CompressorStation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC01D34E2B02C75300EAA9E9 /* CompressorStation.cpp */; };
 		AC01D3552B037D5500EAA9E9 /* Get_Correct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC01D3542B037D5500EAA9E9 /* Get_Correct.cpp */; };
+		ACDA32AB2B20C15E000F8556 /* GasNetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACDA32A92B20C15E000F8556 /* GasNetwork.cpp */; };
+		ACDA32AE2B20C187000F8556 /* Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACDA32AC2B20C187000F8556 /* Graph.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +36,10 @@
 		AC01D34F2B02C75300EAA9E9 /* CompressorStation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CompressorStation.h; sourceTree = "<group>"; };
 		AC01D3542B037D5500EAA9E9 /* Get_Correct.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Get_Correct.cpp; sourceTree = "<group>"; };
 		AC01D3572B037DF900EAA9E9 /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
+		ACDA32A92B20C15E000F8556 /* GasNetwork.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GasNetwork.cpp; sourceTree = "<group>"; };
+		ACDA32AA2B20C15E000F8556 /* GasNetwork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GasNetwork.h; sourceTree = "<group>"; };
+		ACDA32AC2B20C187000F8556 /* Graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Graph.cpp; sourceTree = "<group>"; };
+		ACDA32AD2B20C187000F8556 /* Graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Graph.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +79,10 @@
 				AC01D34C2B02C73E00EAA9E9 /* Pipe.h */,
 				AC01D3542B037D5500EAA9E9 /* Get_Correct.cpp */,
 				AC01D3572B037DF900EAA9E9 /* Logging.h */,
+				ACDA32A92B20C15E000F8556 /* GasNetwork.cpp */,
+				ACDA32AA2B20C15E000F8556 /* GasNetwork.h */,
+				ACDA32AC2B20C187000F8556 /* Graph.cpp */,
+				ACDA32AD2B20C187000F8556 /* Graph.h */,
 			);
 			path = Korgin_laba2;
 			sourceTree = "<group>";
@@ -136,7 +146,9 @@
 			files = (
 				AC01D3502B02C75300EAA9E9 /* CompressorStation.cpp in Sources */,
 				AC01D3552B037D5500EAA9E9 /* Get_Correct.cpp in Sources */,
+				ACDA32AB2B20C15E000F8556 /* GasNetwork.cpp in Sources */,
 				AC01D3452B02C3D900EAA9E9 /* main.cpp in Sources */,
+				ACDA32AE2B20C187000F8556 /* Graph.cpp in Sources */,
 				AC01D34D2B02C73E00EAA9E9 /* Pipe.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
