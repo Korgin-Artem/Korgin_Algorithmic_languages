@@ -32,8 +32,6 @@ void GasNetwork::connectPipesToStations(std::unordered_map<int, Pipe>& pipes, st
             pipes.insert(make_pair(pipe.getid(), pipe));
         }
 
-        stations[in_id].connecting_with_pipes();
-
         std::cout << "Pipe connected successfully.\n";
     } else {
         std::cout << "Insufficient data to establish connections.\n";

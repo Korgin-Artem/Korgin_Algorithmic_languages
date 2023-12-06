@@ -42,3 +42,26 @@ T get_correct_value(T min, T max) {
     }
     return value;
 }
+
+template<typename K>
+int get_valid_id(const string& message, const std::unordered_map<int, K>& items) {
+    int id;
+    cout << message;
+    while (!(cin >> id) || items.find(id) == items.end()) {
+        cerr << "Error! Enter an exiting ID: ";
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+        cout << message;
+    }
+    return id;
+}
+
+template <typename T>
+int get_correct_id(unordered_map<int, T>& dict){
+    int checking_the_key = get_correct_value(1, INT_MAX);
+    while(dict.find(checking_the_key) != dict.end()){
+        cout << "This is no  with this id! Enter the correct id: ";
+        checking_the_key = get_correct_value(1, INT_MAX);
+    }
+    return checking_the_key;
+}

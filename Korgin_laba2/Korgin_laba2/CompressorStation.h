@@ -16,7 +16,6 @@ public:
     void read();
     void edit();
     
-    void connecting_with_pipes();
     void save_data(std::ofstream& out);
     void load_data(std::ifstream& read);
     
