@@ -11,6 +11,8 @@
 #include "CompressorStation.h"
 #include "Logging.h"
 #include "Get_Correct.cpp"
+#include "Graph.h"
+#include "GasNetwork.h"
 
 using namespace std;
 using namespace chrono;
@@ -99,32 +101,6 @@ int get_correct_id(unordered_map<int, T>& dict){
         checking_the_key = get_correct_value(1, INT_MAX);
     }
     return checking_the_key;
-}
-
-void topologicalSort(vector<vector<int>>& adjacencyList, vector<int>& inDegree, vector<bool>& visited, vector<int>& topologicalOrder) {
-    queue<int> q;
-
-    // Заполняем очередь начальными вершинами с нулевой степенью входа
-    for (int i = 0; i < inDegree.size(); ++i) {
-        if (inDegree[i] == 0) {
-            q.push(i);
-        }
-    }
-
-    while (!q.empty()) {
-        int current = q.front();
-        q.pop();
-
-        topologicalOrder.push_back(current);
-
-        // Уменьшаем степени входа смежных вершин
-        for (int neighbor : adjacencyList[current]) {
-            inDegree[neighbor]--;
-            if (inDegree[neighbor] == 0) {
-                q.push(neighbor);
-            }
-        }
-    }
 }
 
 int main() {
@@ -364,71 +340,20 @@ int main() {
                 break;
             }
             case 14: {
-                if (pipes.size() != 0 && stations.size() != 0) {
-                    int in_id, out_id, pipe_diameter;
-                    cout << "Enter the ID of the input compressor station: ";
-                    in_id = get_correct_value<int>(1, INT_MAX);
-                    cout << "Enter the ID of the output compressor station: ";
-                    out_id = get_correct_value<int>(1, INT_MAX);
-                    pipe_diameter = get_correct_diameter();
-                    bool pipe_found = false;
-                    for (auto& [id, pipe] : pipes) {
-                        if (pipe.diameter == pipe_diameter && pipe.id_cs_of_the_entrance == 0 && pipe.id_cs_of_the_exit == 0) {
-                            pipe.connecting_with_cs(in_id, out_id);
-                            pipe_found = true;
-                            break;
-                        }
-                    }
-                    if (!pipe_found) {
-                        cout << "The pipe with the entered diameter does not exist! Create a pipe.\n";
-                        Pipe pipe;
-                        pipe.read();
-                        //pipe.diameter = pipe_diameter;
-                        pipe.connecting_with_cs(in_id, out_id);
-                        pipes.insert(make_pair(pipe.getid(), pipe));
-                    }
-                    cout << "Pipe connected successfully.\n";
-                } else {
-                    cout << "Insufficient data to establish connections.\n";
-                }
+                GasNetwork gasNet;
+                gasNet.connectPipesToStations(pipes, stations);
                 break;
             }
-            case 15:{
-                if (pipes.size() != 0 && stations.size() != 0) {
-                    vector<vector<int>> adjacencyList;
-                    vector<int> inDegree;
-                    vector<bool> visited;
-                    vector<int> topologicalOrder;
-                    
-                    int vertices = stations.size();
-                    int edges = pipes.size();
-                    
-                    adjacencyList.resize(vertices);
-                    inDegree.assign(vertices, 0);
-                    visited.assign(vertices, false);
+            case 15: {
+                Graph gasGraph = buildGraph(pipes, stations);
 
-                    for (int i = 0; i < edges; ++i) {
-                        int from, to;
-                        from = pipes[i].id_cs_of_the_entrance;
-                        to = pipes[i].id_cs_of_the_exit;
-                        adjacencyList[from].push_back(to);
-                        inDegree[to]++;
-                    }
+                std::vector<int> sortedNodes = topologicalSort(gasGraph);
 
-                    topologicalSort(adjacencyList, inDegree, visited, topologicalOrder);
-
-                    if (topologicalOrder.size() != vertices) {
-                        cout << "Graph contains a cycle!" << endl;
-                    } else {
-                        cout << "Topological order of vertices: ";
-                        for (int vertex : topologicalOrder) {
-                            cout << vertex << " ";
-                        }
-                        cout << endl;
-                    }
-                } else {
-                    cout << "No data.\n";
+                std::cout << "Topological sorting result:" << std::endl;
+                for (int node : sortedNodes) {
+                    std::cout << node << " ";
                 }
+                std::cout << std::endl;
                 break;
             }
             default: {

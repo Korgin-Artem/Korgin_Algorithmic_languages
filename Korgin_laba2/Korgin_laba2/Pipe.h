@@ -5,15 +5,17 @@ class Pipe {
 private:
     int id;
     static int Nextid;
+    int id_cs_of_the_entrance;
+    int id_cs_of_the_exit;
 
 public:
     inline int getid() const { return id; };
+    inline int getIdCSOfTheEntrance() const { return id_cs_of_the_entrance; };
+    inline int getIdCSOfTheExit() const { return id_cs_of_the_exit; };
     std::string name;
     int length;
     int diameter;
     bool under_repair;
-    int id_cs_of_the_entrance;
-    int id_cs_of_the_exit;
 
     Pipe();
 

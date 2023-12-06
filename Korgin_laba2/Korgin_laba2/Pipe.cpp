@@ -12,7 +12,7 @@ Pipe::Pipe()
 }
 
 void Pipe::read() {
-    cout << "Enter the pipe name: ";
+    std::cout << "Enter the pipe name: ";
     name = get_str();
     std::cout << "Enter the length of the pipe (in km): ";
     length = get_correct_value<int>(1, INT_MAX);
@@ -42,7 +42,7 @@ void Pipe::connecting_with_cs(int id_from, int id_to){
     id_cs_of_the_exit = id_to;
 }
 
-void Pipe::save_data(ofstream& out) {
+void Pipe::save_data(std::ofstream& out) {
     if (out.is_open()) {
         out << "Pipe\n";
         out<< id << "\n";
@@ -55,7 +55,7 @@ void Pipe::save_data(ofstream& out) {
     }
 }
 
-void Pipe::load_data(ifstream& read) {
+void Pipe::load_data(std::ifstream& read) {
     if (read.is_open()) {
         read >> id;
         read >> name;
@@ -66,6 +66,6 @@ void Pipe::load_data(ifstream& read) {
         read >> id_cs_of_the_exit;
     }
     else {
-        cerr << "Error!";
+        std::cerr << "Error!";
     }
 }
