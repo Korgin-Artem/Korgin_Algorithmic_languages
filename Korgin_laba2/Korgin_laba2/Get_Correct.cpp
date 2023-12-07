@@ -20,7 +20,7 @@ inline int get_correct_diameter() {
         if (!(std::cin >> diameter) || (diameter != 500 && diameter != 700 && diameter != 1000 && diameter != 1400)) {
             std::cout << "Invalid input! Please enter a valid diameter.\n";
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(10000, '\n');
         } else {
             break;
         }
@@ -50,7 +50,7 @@ int get_valid_id(const string& message, const std::unordered_map<int, K>& items)
     while (!(cin >> id) || items.find(id) == items.end()) {
         cerr << "Error! Enter an exiting ID: ";
         cin.clear();
-        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+        cin.ignore(10000, '\n');
         cout << message;
     }
     return id;
