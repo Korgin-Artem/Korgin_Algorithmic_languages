@@ -4,7 +4,7 @@ void Graph::addEdge(int src, int dest) {
     adjList[src].insert(dest);
 }
 
-Graph buildGraph(std::unordered_map<int, Pipe>& pipes, std::unordered_map<int, CompressorStation>& stations) {
+Graph buildGraph(std::unordered_map<int, Pipe> pipes, std::unordered_map<int, CompressorStation> stations) {
     Graph graph;
 
     // Добавление рёбер в граф на основе труб
@@ -61,6 +61,6 @@ std::vector<int> topologicalSort(Graph& graph) {
             }
         }
     }
-
+    
     return result;
 }
