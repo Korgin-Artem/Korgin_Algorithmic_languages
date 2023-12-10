@@ -12,6 +12,7 @@ private:
 public:
     inline unordered_map<int, Pipe> getpipes() { return pipes;};
     inline unordered_map<int, CompressorStation> getcs() { return stations;};
+    
     void connectPipesToStations();
     void print_menu();
     void add_pipe(Pipe pipe);

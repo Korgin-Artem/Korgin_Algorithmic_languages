@@ -178,8 +178,8 @@ int main() {
         net.print_menu();
 
         int choice;
-        cout << "\nEnter a number from 0 to 15 to perform the corresponding action: ";
-        choice = get_correct_value<int>(0, 15);
+        cout << "\nEnter a number from 0 to 17 to perform the corresponding action: ";
+        choice = get_correct_value<int>(0, 17);
         switch (choice) {
             case 0:
                 exit(0);
@@ -257,6 +257,38 @@ int main() {
                 }
                 break;
             }
+            case 16: {
+                Graph gasGraph = buildGraph(net.getpipes(), net.getcs());
+                
+                int sourceID = get_valid_id("Enter source vertex ID: ", net.getcs());
+                int sinkID = get_valid_id("Enter sink vertex ID: ", net.getcs());
+
+                double maxFlow = fordFulkerson(gasGraph, sourceID, sinkID);
+                cout << "Maximum flow: " << maxFlow << endl;
+                break;
+            }
+            case 17: {
+                Graph gasGraph = buildGraph(net.getpipes(), net.getcs());
+                
+                int startStation = get_valid_id("Enter the ID of the initial compressor station: ", net.getcs());
+                int endStation = get_valid_id("Enter the ID of the final compressor station: ", net.getcs());
+
+                std::vector<int> path = shortestPath(gasGraph, startStation, endStation);
+
+                if (path.empty()) {
+                    cout << "The shortest path between the stations has not been found." << endl;
+                } else {
+                    cout << "The shortest way: ";
+                    for (size_t i = 0; i < path.size(); ++i) {
+                        cout << path[i];
+                        if (i != path.size() - 1) {
+                            cout << " -> ";
+                        }
+                    }
+                    cout << endl;
+                }
+                break;
+            }   
             default: {
                 cerr << "Invalid choice. Please try again.\n";
                 break;

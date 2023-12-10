@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "Get_Correct.cpp"
 #include "GasNetwork.h"
 
@@ -19,6 +20,8 @@ void GasNetwork::print_menu(){
     cout << "13. Batch deletion of pipes\n";
     cout << "14. Add connection of pipes and compressor stations to the gas transmission network\n";
     cout << "15. Topological sorting\n";
+    cout << "16. Calculate the maximum flow in the network\n";
+    cout << "17. Calculate the shortest path between the given compressor station\n";
     cout << "0. Exit\n";
 }
 
