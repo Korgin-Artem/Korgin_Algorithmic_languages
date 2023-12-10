@@ -122,3 +122,42 @@ double fordFulkerson(Graph& graph, int sourceID, int sinkID) {
 
     return maxFlow;
 }
+
+std::vector<int> shortestPath(Graph& graph, int start, int end) {
+    std::unordered_map<int, double> distance;
+    std::unordered_map<int, int> parent;
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<std::pair<double, int>>> pq;
+
+    for (const auto& [vertex, _] : graph.adjList) {
+        distance[vertex] = INFINITY;
+    }
+    distance[start] = 0;
+
+    pq.push({0, start});
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        for (const auto& [v, edge] : graph.adjList[u]) {
+            double weight = edge.first;
+            double capacity = edge.second;
+            if (capacity > 0 && distance[v] > distance[u] + weight) {
+                distance[v] = distance[u] + weight;
+                pq.push({distance[v], v});
+                parent[v] = u;
+            }
+        }
+    }
+
+    std::vector<int> path;
+    if (distance[end] != INFINITY) {
+        for (int v = end; v != start; v = parent[v]) {
+            path.push_back(v);
+        }
+        path.push_back(start);
+        std::reverse(path.begin(), path.end());
+    }
+
+    return path;
+}
