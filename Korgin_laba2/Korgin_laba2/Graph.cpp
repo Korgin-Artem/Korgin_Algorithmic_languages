@@ -104,7 +104,7 @@ double fordFulkerson(Graph& graph, int sourceID, int sinkID) {
     double maxFlow = 0.0;
 
     while (bfs(graph, sourceID, sinkID, parent)) {
-        double pathFlow = std::numeric_limits<double>::infinity();
+        double pathFlow = INFINITY;
 
         for (int v = sinkID; v != sourceID; v = parent[v]) {
             int u = parent[v];
